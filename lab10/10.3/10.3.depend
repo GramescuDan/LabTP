@@ -1,7 +1,0 @@
-# depslib dependency file v1.0
-1589410852 source:c:\users\user\desktop\10.3\main.c
-	<stdio.h>
-	<stdlib.h>
-	<string.h>
-	"listad.h."
-
