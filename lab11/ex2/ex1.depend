@@ -1,0 +1,52 @@
+# depslib dependency file v1.0
+1589645365 source:c:\users\user\desktop\ex1\bd.c
+	"bd.h"
+	"util.h"
+	<stdio.h>
+	<string.h>
+	<stdlib.h>
+
+1589634240 c:\users\user\desktop\ex1\bd.h
+
+1589632220 c:\users\user\desktop\ex1\util.h
+
+1589643224 source:c:\users\user\desktop\ex1\main.c
+	"util.h"
+	"bd.h"
+	<stdio.h>
+
+1589632220 source:c:\users\user\desktop\ex1\util.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<stdarg.h>
+
+1589633617 source:c:\users\user\desktop\ex1\fis.c
+	"bd.h"
+	"util.h"
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1589633617 source:c:\users\user\desktop\tp\lab11\ex2\fis.c
+	"bd.h"
+	"util.h"
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1589667526 c:\users\user\desktop\tp\lab11\ex2\bd.h
+
+1589632220 c:\users\user\desktop\tp\lab11\ex2\util.h
+
+1589632220 source:c:\users\user\desktop\tp\lab11\ex2\util.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<stdarg.h>
+
+1589667526 source:c:\users\user\desktop\tp\lab11\ex2\main.c
+	"util.h"
+	"bd.h"
+	<stdio.h>
+
