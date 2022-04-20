@@ -62,30 +62,77 @@ namespace NewProject
             }
             return true;
         }
-
-        private int StringToInt()
+        private bool IsEndLine()
         {
-            var value = 0;
+            if (_lines[_line].Length != _crtChar) return false;
+            return true;
+        }
+
+        private dynamic StringToValue()
+        {
+            _crtChar++;
+            String number = "";
+            bool isInt = true;
+            bool usedDot = false;
+            bool usedE = false;
+            
             while (true)
             {
-                if (IsEndLine(false))
+                
+                if (IsEndLine() && isInt)
                 {
-                    return value/10 ;
+                    return int.Parse(number);
                 }
+                if (IsEndLine() && !isInt && (usedDot || usedE))
+                {
+                    return double.Parse(number);
+                }
+                
+                
 
                 if (Char.IsDigit(_lines[_line][_crtChar]))
                 {
-                    value += Convert.ToInt32(_lines[_line][_crtChar]);
-                    value -= '0';
-                    value *= 10; 
+                    number += _lines[_line][_crtChar];
                     _crtChar++; 
+                }
+                else if (_lines[_line][_crtChar].CompareTo('.') == 0 && !usedDot)
+                {
+                    usedDot = true;
+                    if (IsEndLine())
+                    {
+                        return int.Parse(number);
+                    }
+
+                    isInt = false;
+                    number += _lines[_line][_crtChar];
+                    _crtChar++;
+                }
+                else if (_lines[_line][_crtChar].CompareTo('e') == 0 && !usedE)
+                {
+                    usedE = true;
+                    if (IsEndLine())
+                    {
+                        ErrMessage("Wrong way to write a real number");
+                    }
+                    isInt = false;
+                    number += _lines[_line][_crtChar];
+                    _crtChar++;
                 }
                 else
                 {
-                    return value / 10;
+                    if (isInt)
+                    {
+                        return int.Parse(number);
+                    }
+                    else
+                    {
+                        return double.Parse(number);
+                    }
                 }
+                
             }
         }
+        
         private bool IsEndFile()
         {
             return _lines.Length == _line;
@@ -110,7 +157,7 @@ namespace NewProject
                 }
 
 
-                int value = 0;
+                dynamic value = 0;
                 switch (state)
                 {
                     case 0:
@@ -174,7 +221,7 @@ namespace NewProject
                         else if (_lines[_line][_crtChar].CompareTo('!') == 0)
                         {
                             _crtChar++;
-                            if (IsEndLine(false))
+                            if (IsEndLine())
                             {
                                 _crtChar--;
                                 state = 12;
@@ -188,7 +235,7 @@ namespace NewProject
                         else if (_lines[_line][_crtChar].CompareTo('=') == 0)
                         {
                             _crtChar++;
-                            if (IsEndLine(false))
+                            if (IsEndLine())
                             {
                                 _crtChar--;
                                 state = 15;
@@ -202,7 +249,7 @@ namespace NewProject
                         else if (_lines[_line][_crtChar].CompareTo('<') == 0)
                         {
                             _crtChar++;
-                            if (IsEndLine(false))
+                            if (IsEndLine())
                             {
                                 _crtChar--;
                                 state = 18;
@@ -216,7 +263,7 @@ namespace NewProject
                         else if (_lines[_line][_crtChar].CompareTo('>') == 0)
                         {
                             _crtChar++;
-                            if (IsEndLine(false))
+                            if (IsEndLine())
                             {
                                 _crtChar--;
                                 state = 21;
@@ -428,23 +475,29 @@ namespace NewProject
                         AddToken(_line,EnumCodes.RACC);
                         return (int) EnumCodes.RACC;
                     case 31: 
-                        value = StringToInt();
-                        Console.WriteLine(value);
-                        _crtChar--;
-                        state = 32;
+                        value = StringToValue();
+                        if (value is int)
+                        {
+                            _crtChar--;
+                            state = 32;
+                        }
+                        else if (value is double)
+                        {
+                            _crtChar--;
+                            state = 33;
+                        }
                         break;
+
                     case 32:
                         AddToken(_line,EnumCodes.CT_INT,value);
                         return (int) EnumCodes.CT_INT;
+                    case 33:
+                        AddToken(_line,EnumCodes.CT_REAL,value);
+                        return (int) EnumCodes.CT_REAL;
 
                 }
-                
-
-
             }
-
-            return -1;
-            }
+        }
         
 
         public void StartCompile()
@@ -454,16 +507,13 @@ namespace NewProject
             
             }*/
 
-           // Console.WriteLine(StringToInt());
+            Console.WriteLine(StringToValue());
             
             //GetNextToken();
-            GetNextToken();
-            GetNextToken();
-            GetNextToken();
-            GetNextToken();
-            GetNextToken();
-            GetNextToken();
-
+            
+            
+            //GetNextToken();
+            
 
             PrintTokenList();
         }
