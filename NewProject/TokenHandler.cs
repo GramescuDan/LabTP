@@ -68,6 +68,23 @@ namespace NewProject
             return true;
         }
 
+        private String GetString(char end)
+        {
+            String result = "";
+            while (true)
+            {
+                if (_lines[_line][_crtChar].CompareTo(end) != 0)
+                {
+                    result += _lines[_line][_crtChar];
+                    _crtChar++;
+                }
+                else
+                {
+                    return result;
+                }
+            }
+        }
+
         private dynamic StringToValue()
         {
             _crtChar++;
@@ -83,13 +100,13 @@ namespace NewProject
                 {
                     return int.Parse(number);
                 }
-                if (IsEndLine() && !isInt && (usedDot || usedE))
+                if (IsEndLine() && !isInt && (usedDot || usedE || (usedDot && usedE)))
                 {
                     return double.Parse(number);
                 }
                 
                 
-
+                //De rezolvat functia!
                 if (Char.IsDigit(_lines[_line][_crtChar]))
                 {
                     number += _lines[_line][_crtChar];
@@ -156,7 +173,7 @@ namespace NewProject
                     continue;
                 }
 
-
+                String stringValue = "";
                 dynamic value = 0;
                 switch (state)
                 {
@@ -310,6 +327,20 @@ namespace NewProject
                         {
                             state = 31;
                         }
+                        else if (_lines[_line][_crtChar].CompareTo('\"') == 0)
+                        {
+                            _crtChar++;
+                            state = 34;
+                        }
+                        else if (_lines[_line][_crtChar].CompareTo('\'') == 0)
+                        {
+                            _crtChar++;
+                            state = 37;
+                        }
+                        else if (_lines[_line][_crtChar].CompareTo('_') == 0 || Char.IsLetter(_lines[_line][_crtChar]))
+                        {
+                            state = 38;
+                        }
                         break;
                     
                     case 1:
@@ -317,6 +348,7 @@ namespace NewProject
                         AddToken(_line,EnumCodes.ADD);
                         return (int) EnumCodes.ADD;
                     }
+                    
                     case 2 :
                         AddToken(_line,EnumCodes.SUB);
                         return (int) EnumCodes.SUB;
@@ -474,6 +506,7 @@ namespace NewProject
                     case 30:
                         AddToken(_line,EnumCodes.RACC);
                         return (int) EnumCodes.RACC;
+                    
                     case 31: 
                         value = StringToValue();
                         if (value is int)
@@ -491,10 +524,43 @@ namespace NewProject
                     case 32:
                         AddToken(_line,EnumCodes.CT_INT,value);
                         return (int) EnumCodes.CT_INT;
+                    
                     case 33:
                         AddToken(_line,EnumCodes.CT_REAL,value);
                         return (int) EnumCodes.CT_REAL;
-
+                    
+                    case 34:
+                        stringValue = GetString('\"');
+                        if (stringValue.Length <= 1)
+                        {
+                            state = 35;
+                            break;
+                        }
+                        else
+                        {
+                            state = 36;
+                            break;
+                        }
+                    case 35:
+                        AddToken(_line,EnumCodes.CT_CHAR,stringValue);
+                        return (int) EnumCodes.CT_CHAR;
+                    case 36:
+                        AddToken(_line,EnumCodes.CT_STRING,stringValue);
+                        return (int) EnumCodes.CT_STRING;
+                    case 37:
+                        stringValue = GetString('\'');
+                        if (stringValue.Length <= 1)
+                        {
+                            state = 35;
+                            break;
+                        }
+                        else
+                        {
+                            state = 36;
+                            break;
+                        }
+                        
+                    
                 }
             }
         }
@@ -507,13 +573,11 @@ namespace NewProject
             
             }*/
 
-            Console.WriteLine(StringToValue());
+           // Console.WriteLine(StringToValue());
             
-            //GetNextToken();
-            
-            
-            //GetNextToken();
-            
+            GetNextToken();
+            GetNextToken();
+            Console.WriteLine(_tokenList[0].Value);
 
             PrintTokenList();
         }
