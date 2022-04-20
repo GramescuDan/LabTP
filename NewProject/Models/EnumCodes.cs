@@ -1,0 +1,11 @@
+﻿namespace NewProject.Models
+{
+    public enum EnumCodes
+    {
+        ID, BREAK, CHAR, DOUBLE, ELSE, FOR, IF, INT, RETURN,
+        STRUCT, VOID, WHILE, CT_INT, CT_REAL, CT_CHAR, CT_STRING,
+        COMMA, SEMICOLON, LPAR, RPAR, LBREAK, RBREAK, LACC, RACC, END,
+        ADD, SUB, MUL, DIV, DOT, AND, OR, NOT, ASSIGN, EQUAL, NOTEQ, LESS,
+        LESSEQ, GREATER, GREATEREQ, SPACE, LINECOMMENT   
+    }
+}
