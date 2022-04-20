@@ -1,25 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\dan.gramescu\\Music\\Project\\NewProject\\NewProject\\NewProject.csproj": {}
+    "D:\\Facultate\\LFTC\\Lab_LFTC\\NewProject\\NewProject.csproj": {}
   },
   "projects": {
-    "C:\\Users\\dan.gramescu\\Music\\Project\\NewProject\\NewProject\\NewProject.csproj": {
+    "D:\\Facultate\\LFTC\\Lab_LFTC\\NewProject\\NewProject.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\dan.gramescu\\Music\\Project\\NewProject\\NewProject\\NewProject.csproj",
+        "projectUniqueName": "D:\\Facultate\\LFTC\\Lab_LFTC\\NewProject\\NewProject.csproj",
         "projectName": "NewProject",
-        "projectPath": "C:\\Users\\dan.gramescu\\Music\\Project\\NewProject\\NewProject\\NewProject.csproj",
-        "packagesPath": "C:\\Users\\dan.gramescu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\dan.gramescu\\Music\\Project\\NewProject\\NewProject\\obj\\",
+        "projectPath": "D:\\Facultate\\LFTC\\Lab_LFTC\\NewProject\\NewProject.csproj",
+        "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
+        "outputPath": "D:\\Facultate\\LFTC\\Lab_LFTC\\NewProject\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
           "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet"
         ],
         "configFilePaths": [
-          "C:\\Users\\dan.gramescu\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
@@ -55,12 +53,18 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[5.0.12, 5.0.12]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.405\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -8,7 +8,7 @@ namespace NewProject
     {
         private  int _line;
         private readonly List<Token> _tokenList;
-        private static String[] _lines;
+        private static string[] _lines;
         private static int _crtChar = -1;
         
         
@@ -18,21 +18,30 @@ namespace NewProject
             _tokenList = new List<Token>();
         }
 
-        public void AddToken( int line,EnumCodes code)
+        private void AddToken( int line,EnumCodes code)
         {
-            Token token = new Token(line,code);
+            var token = new Token(line,code);
             _tokenList.Add(token);
         }
 
-        public void PrintTokenList()
+        private void AddToken( int line,EnumCodes code, dynamic value)
         {
-            foreach (Token token in _tokenList)
+            var token = new Token(line,code)
             {
-                Console.WriteLine(token._code);
+                Value = value
+            };
+            _tokenList.Add(token);
+        }
+
+        private void PrintTokenList()
+        {
+            foreach (var token in _tokenList)
+            {
+                Console.WriteLine(token.Code);
             }
         }
 
-        public void ErrMessage(String message)
+        private void ErrMessage(String message)
         {
             Console.Error.WriteLine($"At line {_line}: {message}.Please Resolve!");
             Environment.Exit(-1);
@@ -46,30 +55,45 @@ namespace NewProject
         
         private bool IsEndLine(bool skip)
         {
-            if (_lines[_line].Length == _crtChar)
+            if (_lines[_line].Length != _crtChar) return false;
+            if (skip)
             {
-                if (skip)
-                {
-                    NextLine();
-                }
-                return true;
+                NextLine();
+            }
+            return true;
         }
-        return false;
-    }
 
+        private int StringToInt()
+        {
+            var value = 0;
+            while (true)
+            {
+                if (IsEndLine(false))
+                {
+                    return value/10 ;
+                }
+
+                if (Char.IsDigit(_lines[_line][_crtChar]))
+                {
+                    value += Convert.ToInt32(_lines[_line][_crtChar]);
+                    value -= '0';
+                    value *= 10; 
+                    _crtChar++; 
+                }
+                else
+                {
+                    return value / 10;
+                }
+            }
+        }
         private bool IsEndFile()
         {
-            if (_lines.Length == _line)
-            {
-                return true;
-            }
-
-            return false;
+            return _lines.Length == _line;
         }
 
-        public int GetNextToken()
+        private int GetNextToken()
         {
-            int state = 0;
+            var state = 0;
             _crtChar += 1;
             while (true)
             {
@@ -85,6 +109,8 @@ namespace NewProject
                     continue;
                 }
 
+
+                int value = 0;
                 switch (state)
                 {
                     case 0:
@@ -106,7 +132,16 @@ namespace NewProject
                         }
                         else if (_lines[_line][_crtChar].CompareTo('/') == 0)
                         {
-                            state = 4;
+                            _crtChar++;
+                            if (IsEndLine(false))
+                            {
+                                _crtChar--;
+                                state = 5;
+                            }
+                            else
+                            {
+                                state = 4;  
+                            }
                         }
                         else if (_lines[_line][_crtChar].CompareTo('.') == 0)
                         {
@@ -117,7 +152,7 @@ namespace NewProject
                             _crtChar++;
                             if (IsEndLine(true))
                             {
-                                ErrMessage("Undifined Token");
+                                ErrMessage("Undefined Token");
                             }
                             else
                             {
@@ -129,7 +164,7 @@ namespace NewProject
                             _crtChar++;
                             if (IsEndLine(true))
                             {
-                                ErrMessage("Undifined Token");
+                                ErrMessage("Undefined Token");
                             }
                             else
                             {
@@ -141,10 +176,92 @@ namespace NewProject
                             _crtChar++;
                             if (IsEndLine(false))
                             {
+                                _crtChar--;
                                 state = 12;
                             }
-                            state = 11;
-                            
+                            else
+                            {
+                                state = 11;  
+                            }
+
+                        }
+                        else if (_lines[_line][_crtChar].CompareTo('=') == 0)
+                        {
+                            _crtChar++;
+                            if (IsEndLine(false))
+                            {
+                                _crtChar--;
+                                state = 15;
+                            }
+                            else
+                            {
+                                state = 14;  
+                            }
+
+                        }
+                        else if (_lines[_line][_crtChar].CompareTo('<') == 0)
+                        {
+                            _crtChar++;
+                            if (IsEndLine(false))
+                            {
+                                _crtChar--;
+                                state = 18;
+                            }
+                            else
+                            {
+                                state = 17;  
+                            }
+
+                        }
+                        else if (_lines[_line][_crtChar].CompareTo('>') == 0)
+                        {
+                            _crtChar++;
+                            if (IsEndLine(false))
+                            {
+                                _crtChar--;
+                                state = 21;
+                            }
+                            else
+                            {
+                                state = 20;  
+                            }
+
+                        }
+                        else if (_lines[_line][_crtChar].CompareTo(',') == 0)
+                        {
+                            state = 23;
+                        }
+                        else if (_lines[_line][_crtChar].CompareTo(';') == 0)
+                        {
+                            state = 24;
+                        }
+                        else if (_lines[_line][_crtChar].CompareTo('(') == 0)
+                        {
+                            state = 25;
+                        }
+                        else if (_lines[_line][_crtChar].CompareTo(')') == 0)
+                        {
+                            state = 26;
+                        }
+                        else if (_lines[_line][_crtChar].CompareTo('[') == 0)
+                        {
+                            state = 27;
+                        }
+                        else if (_lines[_line][_crtChar].CompareTo(']') == 0)
+                        {
+                            state = 28;
+                        }
+                        else if (_lines[_line][_crtChar].CompareTo('{') == 0)
+                        {
+                            state = 29;
+                        }
+                        else if (_lines[_line][_crtChar].CompareTo('}') == 0)
+                        {
+                            state = 30;
+                        }
+                        else if (Char.IsDigit(_lines[_line][_crtChar]))
+                        {
+                            state = 31;
                         }
                         break;
                     
@@ -162,11 +279,10 @@ namespace NewProject
                         return (int) EnumCodes.MUL;
                     
                     case 4:
-                        _crtChar++;
                         if (_lines[_line][_crtChar].CompareTo('/') == 0)
                         {
-                            state = 0;
                             NextLine();
+                            state = 0;
                             break;
                         }
 
@@ -188,7 +304,7 @@ namespace NewProject
                             state = 8;
                             break;
                         }
-                        ErrMessage("Undifined Token");
+                        ErrMessage("Undefined Token");
                         break;
                     
                     case 8:
@@ -201,7 +317,7 @@ namespace NewProject
                             state = 10;
                             break;
                         }
-                        ErrMessage("Undifined Token");
+                        ErrMessage("Undefined Token");
                         break;
                     
                     case 10:
@@ -214,17 +330,113 @@ namespace NewProject
                             state = 13;
                             break;
                         }
+                        _crtChar--;
                         state = 12;
                         break;
 
                     case 12:
-                        _crtChar--;
                         AddToken(_line,EnumCodes.NOT);
                         return (int) EnumCodes.NOT;
                     
                     case 13:
                         AddToken(_line,EnumCodes.NOTEQ);
                         return (int) EnumCodes.NOTEQ;
+                    
+                    case 14:
+                        if (_lines[_line][_crtChar].CompareTo('=') == 0)
+                        {
+                            state = 16;
+                            break;
+                        }
+                        _crtChar--;
+                        state = 15;
+                        break;
+
+                    case 15:
+                        AddToken(_line,EnumCodes.ASSIGN);
+                        return (int) EnumCodes.ASSIGN;
+                    
+                    case 16:
+                        AddToken(_line,EnumCodes.EQUAL);
+                        return (int) EnumCodes.EQUAL;
+                    
+                    case 17:
+                        if (_lines[_line][_crtChar].CompareTo('=') == 0)
+                        {
+                            state = 19;
+                            break;
+                        }
+                        _crtChar--;
+                        state = 18;
+                        break;
+
+                    case 18:
+                        AddToken(_line,EnumCodes.LESS);
+                        return (int) EnumCodes.LESS;
+                    
+                    case 19:
+                        AddToken(_line,EnumCodes.LESSEQ);
+                        return (int) EnumCodes.LESSEQ;
+                    
+                    case 20:
+                        if (_lines[_line][_crtChar].CompareTo('=') == 0)
+                        {
+                            state = 22;
+                            break;
+                        }
+                        _crtChar--;
+                        state = 21;
+                        break;
+
+                    case 21:
+                        AddToken(_line,EnumCodes.GREATER);
+                        return (int) EnumCodes.GREATER;
+                    
+                    case 22:
+                        AddToken(_line,EnumCodes.GREATEREQ);
+                        return (int) EnumCodes.GREATEREQ;
+                    
+                    case 23:
+                        AddToken(_line,EnumCodes.COMMA);
+                        return (int) EnumCodes.COMMA;
+                    
+                    case 24:
+                        AddToken(_line,EnumCodes.SEMICOLON);
+                        return (int) EnumCodes.SEMICOLON;
+                    
+                    case 25:
+                        AddToken(_line,EnumCodes.LPAR);
+                        return (int) EnumCodes.LPAR;
+                    
+                    case 26:
+                        AddToken(_line,EnumCodes.RPAR);
+                        return (int) EnumCodes.RPAR;
+                    
+                    case 27:
+                        AddToken(_line,EnumCodes.LBREAK);
+                        return (int) EnumCodes.LBREAK;
+                    
+                    case 28:
+                        AddToken(_line,EnumCodes.RBREAK);
+                        return (int) EnumCodes.RBREAK;
+                    
+                    case 29:
+                        AddToken(_line,EnumCodes.LACC);
+                        return (int)EnumCodes.LACC;
+                    
+                    case 30:
+                        AddToken(_line,EnumCodes.RACC);
+                        return (int) EnumCodes.RACC;
+                    case 31: 
+                        value = StringToInt();
+                        Console.WriteLine(value);
+                        _crtChar--;
+                        state = 32;
+                        break;
+                    case 32:
+                        AddToken(_line,EnumCodes.CT_INT,value);
+                        return (int) EnumCodes.CT_INT;
+
                 }
                 
 
@@ -242,14 +454,17 @@ namespace NewProject
             
             }*/
 
-            GetNextToken();
-            GetNextToken();
-            GetNextToken();
+           // Console.WriteLine(StringToInt());
             
+            //GetNextToken();
             GetNextToken();
             GetNextToken();
-            
-            
+            GetNextToken();
+            GetNextToken();
+            GetNextToken();
+            GetNextToken();
+
+
             PrintTokenList();
         }
     }

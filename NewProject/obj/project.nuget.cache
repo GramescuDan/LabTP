@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "aufq861kCx6fJsJAnSgp6U5Nd7wGfz6U6QIyCyVeyoTQQimU13Jt/ZgjpQgg9wWUsQpRWdEyMaSMIz8GaVdwgA==",
+  "dgSpecHash": "riZ6tgOnKDcRYRjoYLe0oU/XuCMl8A4D664jlo49TjTh5nzo9p0mcwr8AO26YgT7vB5vFzIkzF+BYuXgpB1b4w==",
   "success": true,
-  "projectFilePath": "C:\\Users\\dan.gramescu\\Music\\Project\\NewProject\\NewProject\\NewProject.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "D:\\Facultate\\LFTC\\Lab_LFTC\\NewProject\\NewProject.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\User\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\5.0.12\\microsoft.netcore.app.host.win-x64.5.0.12.nupkg.sha512"
+  ],
   "logs": []
 }
