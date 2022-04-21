@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using NewProject.Interfaces;
 using NewProject.Models;
 
 namespace NewProject
 {
-    public class TokenHandler
+    public class TokenHandler : ITokenHandler
     {
         private  int _line;
         private readonly List<Token> _tokenList;
@@ -31,14 +32,6 @@ namespace NewProject
                 Value = value
             };
             _tokenList.Add(token);
-        }
-
-        private void PrintTokenList()
-        {
-            foreach (var token in _tokenList)
-            {
-                Console.WriteLine(token.Code);
-            }
         }
 
         private void ErrMessage(String message)
@@ -687,14 +680,12 @@ namespace NewProject
         }
         
 
-        public void StartCompile()
+        public  List<Token> GetTokens()
         {
             while (GetNextToken()!=(int) EnumCodes.END)
             {
-            
             }
-
-            PrintTokenList();
+            return _tokenList;
         }
     }
 }

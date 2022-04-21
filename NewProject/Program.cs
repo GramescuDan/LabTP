@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO.Enumeration;
 using System.Linq;
+using NewProject.Models;
 
 namespace NewProject
 {
@@ -20,9 +21,8 @@ namespace NewProject
         static void Main()
         {
             string[] lines = System.IO.File.ReadAllLines("../../../Test_code");
-
-            TokenHandler tkHandler = new TokenHandler(lines);
-            tkHandler.StartCompile();
+            SyntacticAnalyser syAnalyser = new SyntacticAnalyser(new TokenHandler(lines));
+            syAnalyser.PrintTokens();
         }
         
     }
