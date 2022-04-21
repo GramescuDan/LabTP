@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NewProject.Models;
 
 namespace NewProject
@@ -23,7 +24,7 @@ namespace NewProject
             var token = new Token(line,code);
             _tokenList.Add(token);
         }
-
+        
         private void AddToken( int line,EnumCodes code, dynamic value)
         {
             var token = new Token(line,code)
@@ -31,6 +32,8 @@ namespace NewProject
                 Value = value
             };
             _tokenList.Add(token);
+            Console.WriteLine(value);
+            Console.WriteLine(token.Value);
         }
 
         private void PrintTokenList()
@@ -80,6 +83,29 @@ namespace NewProject
                 }
                 else
                 {
+                    return result;
+                }
+            }
+        }
+        private string GetString()
+        {
+            var result = "";
+            while (true)
+            {
+                if (IsEndLine())
+                {
+                    _crtChar--;
+                    return result;
+                }
+                
+                if (_lines[_line][_crtChar].CompareTo('_') == 0  || char.IsLetter(_lines[_line][_crtChar]) || char.IsDigit(_lines[_line][_crtChar]))
+                {
+                    result += _lines[_line][_crtChar];
+                    _crtChar++;
+                }
+                else
+                {
+                    _crtChar--;
                     return result;
                 }
             }
@@ -159,6 +185,8 @@ namespace NewProject
         {
             var state = 0;
             _crtChar += 1;
+            String stringValue = "";
+            dynamic value = 0;
             while (true)
             {
 
@@ -172,9 +200,7 @@ namespace NewProject
                 {
                     continue;
                 }
-
-                String stringValue = "";
-                dynamic value = 0;
+                
                 switch (state)
                 {
                     case 0:
@@ -258,7 +284,7 @@ namespace NewProject
                                 state = 15;
                             }
                             else
-                            {
+                            {   
                                 state = 14;  
                             }
 
@@ -409,7 +435,6 @@ namespace NewProject
                             state = 13;
                             break;
                         }
-                        _crtChar--;
                         state = 12;
                         break;
 
@@ -424,10 +449,11 @@ namespace NewProject
                     case 14:
                         if (_lines[_line][_crtChar].CompareTo('=') == 0)
                         {
+                            
                             state = 16;
                             break;
                         }
-                        _crtChar--;
+                        
                         state = 15;
                         break;
 
@@ -442,10 +468,11 @@ namespace NewProject
                     case 17:
                         if (_lines[_line][_crtChar].CompareTo('=') == 0)
                         {
+                            
                             state = 19;
                             break;
                         }
-                        _crtChar--;
+                        
                         state = 18;
                         break;
 
@@ -460,10 +487,11 @@ namespace NewProject
                     case 20:
                         if (_lines[_line][_crtChar].CompareTo('=') == 0)
                         {
+                            
                             state = 22;
                             break;
                         }
-                        _crtChar--;
+                        
                         state = 21;
                         break;
 
@@ -531,6 +559,7 @@ namespace NewProject
                     
                     case 34:
                         stringValue = GetString('\"');
+                        
                         if (stringValue.Length <= 1)
                         {
                             state = 35;
@@ -559,8 +588,69 @@ namespace NewProject
                             state = 36;
                             break;
                         }
+                    case 38:
+                        stringValue = GetString();
+                        if (stringValue.ToLower().Equals("int"))
+                        {
+                            AddToken(_line,EnumCodes.INT);
+                            return (int) EnumCodes.INT;
+                        }
+                        else if (stringValue.ToLower().Equals("double"))
+                        {
+                            AddToken(_line,EnumCodes.DOUBLE);
+                            return (int) EnumCodes.DOUBLE;
+                        }
+                        else if (stringValue.ToLower().Equals("for"))
+                        {
+                            AddToken(_line,EnumCodes.FOR);
+                            return (int) EnumCodes.FOR;
+                        }
+                        else if (stringValue.ToLower().Equals("if"))
+                        {
+                            AddToken(_line,EnumCodes.IF);
+                            return (int) EnumCodes.IF;
+                        }
+                        else if (stringValue.ToLower().Equals("break"))
+                        {
+                            AddToken(_line,EnumCodes.BREAK);
+                            return (int) EnumCodes.BREAK;
+                        }
+                        else if (stringValue.ToLower().Equals("char"))
+                        {
+                            AddToken(_line,EnumCodes.CHAR);
+                            return (int) EnumCodes.CHAR;
+                        }
+                        else if (stringValue.ToLower().Equals("else"))
+                        {
+                            AddToken(_line,EnumCodes.ELSE);
+                            return (int) EnumCodes.ELSE;
+                        }
+                        else if (stringValue.ToLower().Equals("return"))
+                        {
+                            AddToken(_line,EnumCodes.RETURN);
+                            return (int) EnumCodes.RETURN;
+                        }
+                        else if (stringValue.ToLower().Equals("struct"))
+                        {
+                            AddToken(_line,EnumCodes.STRUCT);
+                            return (int) EnumCodes.STRUCT;
+                        }
+                        else if (stringValue.ToLower().Equals("void"))
+                        {
+                            AddToken(_line,EnumCodes.VOID);
+                            return (int) EnumCodes.VOID;
+                        }
+                        else if (stringValue.ToLower().Equals("while"))
+                        {
+                            AddToken(_line,EnumCodes.WHILE);
+                            return (int) EnumCodes.WHILE;
+                        }
+                        else
+                        {
+                            AddToken(_line,EnumCodes.ID,stringValue);
+                            return (int) EnumCodes.ID;
+                        }
                         
-                    
                 }
             }
         }
@@ -568,16 +658,15 @@ namespace NewProject
 
         public void StartCompile()
         {
-            /*while (GetNextToken()!=(int) EnumCodes.END)
+            while (GetNextToken()!=(int) EnumCodes.END)
             {
             
-            }*/
+            }
 
-           // Console.WriteLine(StringToValue());
+             Console.WriteLine(_tokenList.First().Value);
             
-            GetNextToken();
-            GetNextToken();
-            Console.WriteLine(_tokenList[0].Value);
+            /*GetNextToken();
+            GetNextToken();*/
 
             PrintTokenList();
         }
