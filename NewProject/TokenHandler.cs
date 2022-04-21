@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using NewProject.Models;
 
 namespace NewProject
@@ -113,67 +112,93 @@ namespace NewProject
 
         private dynamic StringToValue()
         {
-            _crtChar++;
             String number = "";
             bool isInt = true;
-            bool usedDot = false;
             bool usedE = false;
-            
+            bool usedSign = false;
+
             while (true)
             {
-                
-                if (IsEndLine() && isInt)
-                {
-                    return int.Parse(number);
-                }
-                if (IsEndLine() && !isInt && (usedDot || usedE || (usedDot && usedE)))
-                {
-                    return double.Parse(number);
-                }
-                
-                
-                //De rezolvat functia!
-                if (Char.IsDigit(_lines[_line][_crtChar]))
-                {
-                    number += _lines[_line][_crtChar];
-                    _crtChar++; 
-                }
-                else if (_lines[_line][_crtChar].CompareTo('.') == 0 && !usedDot)
-                {
-                    usedDot = true;
-                    if (IsEndLine())
-                    {
-                        return int.Parse(number);
-                    }
-
-                    isInt = false;
-                    number += _lines[_line][_crtChar];
-                    _crtChar++;
-                }
-                else if (_lines[_line][_crtChar].CompareTo('e') == 0 && !usedE)
-                {
-                    usedE = true;
-                    if (IsEndLine())
-                    {
-                        ErrMessage("Wrong way to write a real number");
-                    }
-                    isInt = false;
-                    number += _lines[_line][_crtChar];
-                    _crtChar++;
-                }
-                else
+                if (IsEndLine())
                 {
                     if (isInt)
                     {
-                        return int.Parse(number);
+                        return int.Parse(number);  
+                    }
+
+                    return double.Parse(number);
+                }
+
+                if (char.IsDigit(_lines[_line][_crtChar]))
+                {
+                    number += _lines[_line][_crtChar];
+                    _crtChar++;
+                }else if (_lines[_line][_crtChar].CompareTo('.') == 0)
+                {
+                    _crtChar++;
+                    if (IsEndLine())
+                    {
+                        _crtChar--;
+                        if (isInt)
+                        {
+                            return int.Parse(number);
+                        }
+                        return double.Parse(number);
+                    }
+
+                    if (number[^1].Equals('e') || number[^1].Equals('E'))
+                    {
+                        ErrMessage("This is not a number");
+                    }
+
+                    _crtChar--;
+                    number += _lines[_line][_crtChar];
+                    _crtChar++;
+                    isInt = false;
+                    
+                }else if (_lines[_line][_crtChar].CompareTo('e') == 0 || _lines[_line][_crtChar].CompareTo('E') == 0)
+                {
+                    _crtChar++;
+                    if (IsEndLine())
+                    {
+                        if (isInt)
+                        {
+                            return int.Parse(number);
+                        }
+                        return double.Parse(number);
+                    }
+                    if (number[^1].Equals('.'))
+                    {
+                        ErrMessage("This is not a number");
+                    }
+                    _crtChar--;
+                    number += _lines[_line][_crtChar];
+                    _crtChar++;
+                    isInt = false;
+                }
+                else if (_lines[_line][_crtChar].CompareTo('+') == 0 || _lines[_line][_crtChar].CompareTo('-') == 0)
+                {
+                    _crtChar++;
+                    if (IsEndLine() || !number[^1].Equals('e'))
+                    {
+                        _crtChar--;
+                        if (isInt)
+                        {
+                            return int.Parse(number);
+                        }
+                        return double.Parse(number);
                     }
                     else
                     {
-                        return double.Parse(number);
+                        _crtChar--;
+                        number += _lines[_line][_crtChar];
+                        _crtChar++;
                     }
                 }
-                
             }
+            
+
+
         }
         
         private bool IsEndFile()
@@ -662,11 +687,6 @@ namespace NewProject
             {
             
             }
-
-             Console.WriteLine(_tokenList.First().Value);
-            
-            /*GetNextToken();
-            GetNextToken();*/
 
             PrintTokenList();
         }
