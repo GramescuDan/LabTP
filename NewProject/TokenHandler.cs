@@ -31,8 +31,6 @@ namespace NewProject
                 Value = value
             };
             _tokenList.Add(token);
-            Console.WriteLine(value);
-            Console.WriteLine(token.Value);
         }
 
         private void PrintTokenList()
@@ -114,8 +112,6 @@ namespace NewProject
         {
             String number = "";
             bool isInt = true;
-            bool usedE = false;
-            bool usedSign = false;
 
             while (true)
             {
@@ -194,6 +190,14 @@ namespace NewProject
                         number += _lines[_line][_crtChar];
                         _crtChar++;
                     }
+                }
+                else
+                {
+                    if (isInt)
+                    {
+                        return int.Parse(number);  
+                    }
+                    return double.Parse(number); 
                 }
             }
             
@@ -288,56 +292,56 @@ namespace NewProject
                         }
                         else if (_lines[_line][_crtChar].CompareTo('!') == 0)
                         {
-                            _crtChar++;
+                            
                             if (IsEndLine())
                             {
-                                _crtChar--;
                                 state = 12;
                             }
                             else
                             {
+                                _crtChar++;
                                 state = 11;  
                             }
 
                         }
                         else if (_lines[_line][_crtChar].CompareTo('=') == 0)
                         {
-                            _crtChar++;
                             if (IsEndLine())
                             {
-                                _crtChar--;
+                                
                                 state = 15;
                             }
                             else
-                            {   
+                            {
+                                _crtChar++;
                                 state = 14;  
                             }
 
                         }
                         else if (_lines[_line][_crtChar].CompareTo('<') == 0)
                         {
-                            _crtChar++;
                             if (IsEndLine())
                             {
-                                _crtChar--;
                                 state = 18;
                             }
                             else
                             {
+                                _crtChar++;
                                 state = 17;  
                             }
 
                         }
                         else if (_lines[_line][_crtChar].CompareTo('>') == 0)
                         {
-                            _crtChar++;
+                            
                             if (IsEndLine())
                             {
-                                _crtChar--;
+                                
                                 state = 21;
                             }
                             else
                             {
+                                _crtChar++;
                                 state = 20;  
                             }
 
@@ -460,6 +464,7 @@ namespace NewProject
                             state = 13;
                             break;
                         }
+                        _crtChar--;
                         state = 12;
                         break;
 
@@ -478,7 +483,8 @@ namespace NewProject
                             state = 16;
                             break;
                         }
-                        
+
+                        _crtChar--;
                         state = 15;
                         break;
 
@@ -497,7 +503,7 @@ namespace NewProject
                             state = 19;
                             break;
                         }
-                        
+                        _crtChar--;
                         state = 18;
                         break;
 
@@ -516,7 +522,8 @@ namespace NewProject
                             state = 22;
                             break;
                         }
-                        
+
+                        _crtChar--;
                         state = 21;
                         break;
 
@@ -562,14 +569,13 @@ namespace NewProject
                     
                     case 31: 
                         value = StringToValue();
+                        _crtChar--;
                         if (value is int)
                         {
-                            _crtChar--;
                             state = 32;
                         }
                         else if (value is double)
                         {
-                            _crtChar--;
                             state = 33;
                         }
                         break;
