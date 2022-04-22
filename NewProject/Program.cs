@@ -8,7 +8,7 @@ namespace NewProject
 {
     class Program
     {
-        static public void printFile(List<String> lines)
+        static public void PrintFile(List<String> lines)
         {
             foreach (String line in lines)
             {
