@@ -152,11 +152,282 @@ namespace NewProject.Models
             _iterator = ins;
             return false;
         }
+
+        private bool exprOr()
+        {
+            int ins = _iterator;
+            if (exprAnd())
+            {
+                if (exprOrPrim())
+                {
+                    return true;
+                } 
+            }
+
+            _iterator = ins;
+            return false;
+        }
+        
+        private bool exprAnd()
+        {
+            int ins = _iterator;
+
+            if (exprEq())
+            {
+                if (exprAndPrim())
+                {
+                    return true;
+                }
+            }
+
+            _iterator = ins;
+            return false;
+        }
+        private bool exprEq()
+        {
+            int ins = _iterator;
+
+            if (exprRel())
+            {
+                if (exprEqPrim())
+                {
+                    return true;
+                }
+            }
+            
+            _iterator = ins;
+            return false;
+        }
+        private bool exprRel()
+        {
+            int ins = _iterator;
+
+            if (exprAdd())
+            {
+                if (exprRelPrim())
+                {
+                    return true;
+                }
+            }
+            
+            _iterator = ins;
+            return false;
+        }
+        
+        private bool exprAdd()
+        {
+            int ins = _iterator;
+
+            if (exprMul())
+            {
+                if (exprAddPrim())
+                {
+                    return true;
+                }
+            }
+            
+            _iterator = ins;
+            return false;
+        }
+        private bool exprMul()
+        {
+            int ins = _iterator;
+
+            if (exprCast())
+            {
+                if (exprMulPrim())
+                {
+                    return true;
+                }  
+            }
+            
+            _iterator = ins;
+            return false;
+        }
+        private bool exprCast()
+        {
+            int ins = _iterator;
+
+            if (Consume(EnumCodes.LPAR))
+            {
+                if (TypeBase())
+                {
+                    if (ArrayDeclaration()) ;
+                    if (Consume(EnumCodes.RPAR))
+                    {
+                        if (exprCast())
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }else if (exprUnary())
+            {
+                return true;
+            }
+            
+            _iterator = ins;
+            return false;
+        }
+
+        private bool exprUnary()
+        {
+            int ins = _iterator;
+            
+            
+            
+            _iterator = ins;
+            return false; 
+        }
+
+        private bool exprMulPrim()
+        {
+            if (Consume(EnumCodes.MUL))
+            {
+                if (exprCast())
+                {
+                    if (exprMulPrim())
+                    {
+                        return true;
+                    }
+                }
+            }
+            
+            return true;
+        }
+        
+        private bool exprAddPrim()
+        {
+            if (Consume(EnumCodes.ADD))
+            {
+                if (exprMul())
+                {
+                    if (exprAddPrim())
+                    {
+                        return true;
+                    }
+                }
+            }else if (Consume(EnumCodes.SUB))
+            {
+                if (exprMul())
+                {
+                    if (exprAddPrim())
+                    {
+                        return true;
+                    }
+                }
+            }
+            
+            return true;
+        }
+        
+        private bool exprRelPrim()
+        {
+            if (Consume(EnumCodes.LESS))
+            {
+                if (exprAdd())
+                {
+                    if (exprRelPrim())
+                    {
+                        return true;
+                    }
+                }
+            }else if (Consume(EnumCodes.LESSEQ))
+            {
+                if (exprAdd())
+                {
+                    if (exprRelPrim())
+                    {
+                        return true;
+                    }
+                }
+            }else if (Consume(EnumCodes.GREATER))
+            {
+                if (exprAdd())
+                {
+                    if (exprRelPrim())
+                    {
+                        return true;
+                    }
+                }
+            }else 
+            if (Consume(EnumCodes.GREATEREQ))
+            {
+                if (exprAdd())
+                {
+                    if (exprRelPrim())
+                    {
+                        return true;
+                    }
+                }
+            }
+            return true;
+        }
+        
+        private bool exprOrPrim()
+        {
+            if (Consume(EnumCodes.OR))
+            {
+                if (exprAnd())
+                {
+                    if (exprOrPrim())
+                    {
+                        return true;
+                    }
+                }
+            }
+            return true;
+        }
+
+        private bool exprAndPrim()
+        {
+            
+            if (Consume(EnumCodes.AND))
+            {
+                if (exprEq())
+                {
+                    if (exprAndPrim())
+                    {
+                        return true;
+                    }
+                }
+            }
+            
+            return true;
+        }
+        private bool exprEqPrim()
+        {
+            
+            if (Consume(EnumCodes.EQUAL))
+            {
+                if (exprEq())
+                {
+                    if (exprEqPrim())
+                    {
+                        return true;
+                    }
+                }
+            }
+            
+            if (Consume(EnumCodes.NOTEQ))
+            {
+                if (exprEq())
+                {
+                    if (exprEqPrim())
+                    {
+                        return true;
+                    }
+                }
+            }
+            
+            return true;
+        }
+        
         
         
         public void PrintTokens()
         {
-            Console.WriteLine(StructDefine());
+            Console.WriteLine(funParam());
         }
     }
 }
