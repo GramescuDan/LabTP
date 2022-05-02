@@ -138,6 +138,11 @@ namespace NewProject
                         ErrMessage("This is not a number");
                     }
                     
+                    if (!char.IsDigit(_lines[_line][_crtChar]))
+                    {
+                        ErrMessage("this is not a number");
+                    }
+                    
 
                     _crtChar--;
                     number += _lines[_line][_crtChar];
@@ -165,12 +170,11 @@ namespace NewProject
                     _crtChar++;
                     if (IsEndLine() || !number[^1].Equals('e'))
                     {
-                        _crtChar--;
-                        if (isInt)
-                        {
-                            return int.Parse(number);
-                        }
-                        return double.Parse(number);
+                        ErrMessage("this is not a number");
+                    }
+                    else if (!char.IsDigit(_lines[_line][_crtChar]))
+                    {
+                        ErrMessage("this is not a number");
                     }
                     else
                     {
