@@ -431,7 +431,7 @@ namespace NewProject.Models
             {
                 Console.Write(token.Line+ ":");
                 Console.Write(token.Code);
-                if (token.Code == EnumCodes.ID || token.Code == EnumCodes.CT_INT || token.Code == EnumCodes.CT_REAL)
+                if (token.Code == EnumCodes.ID || token.Code == EnumCodes.CT_INT || token.Code == EnumCodes.CT_REAL || token.Code == EnumCodes.CT_CHAR || token.Code == EnumCodes.CT_STRING)
                 { 
                     Console.Write(" ->" + token.Value);  
                 }
