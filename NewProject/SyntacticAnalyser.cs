@@ -427,7 +427,16 @@ namespace NewProject.Models
         
         public void PrintTokens()
         {
-            Console.WriteLine(funParam());
+            foreach (Token token in _tokenList)
+            {
+                Console.Write(token.Line+ ":");
+                Console.Write(token.Code);
+                if (token.Code == EnumCodes.ID || token.Code == EnumCodes.CT_INT || token.Code == EnumCodes.CT_REAL)
+                { 
+                    Console.Write(" ->" + token.Value);  
+                }
+                Console.WriteLine();
+            }
         }
     }
 }

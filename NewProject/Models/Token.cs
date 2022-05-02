@@ -7,8 +7,8 @@ namespace NewProject.Models
     public class Token
     {
         public EnumCodes Code { get;}
-        public int Line { get; }
-        
+        public int Line { get; set; }
+
         public dynamic Value;
 
         public Token(int line, EnumCodes code)

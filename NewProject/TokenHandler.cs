@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.VisualBasic;
 using NewProject.Interfaces;
 using NewProject.Models;
 
@@ -36,7 +37,8 @@ namespace NewProject
 
         private void ErrMessage(String message)
         {
-            Console.Error.WriteLine($"At line {_line}: {message}.Please Resolve!");
+            var number = _line + 1;
+            Console.Error.WriteLine($"At line {number}: {message}.Please Resolve!");
             Environment.Exit(-1);
         }
 
@@ -122,23 +124,20 @@ namespace NewProject
                 {
                     number += _lines[_line][_crtChar];
                     _crtChar++;
+                    
                 }else if (_lines[_line][_crtChar].CompareTo('.') == 0)
                 {
                     _crtChar++;
                     if (IsEndLine())
                     {
-                        _crtChar--;
-                        if (isInt)
-                        {
-                            return int.Parse(number);
-                        }
-                        return double.Parse(number);
+                        ErrMessage("This is not a real number");
                     }
 
                     if (number[^1].Equals('e') || number[^1].Equals('E'))
                     {
                         ErrMessage("This is not a number");
                     }
+                    
 
                     _crtChar--;
                     number += _lines[_line][_crtChar];
@@ -150,11 +149,7 @@ namespace NewProject
                     _crtChar++;
                     if (IsEndLine())
                     {
-                        if (isInt)
-                        {
-                            return int.Parse(number);
-                        }
-                        return double.Parse(number);
+                        ErrMessage("This is not a number");
                     }
                     if (number[^1].Equals('.'))
                     {
@@ -682,9 +677,10 @@ namespace NewProject
 
         public  List<Token> GetTokens()
         {
-            while (GetNextToken()!=(int) EnumCodes.END)
-            {
-            }
+            while (GetNextToken()!=(int) EnumCodes.END) { }
+            
+            foreach (Token token in _tokenList) { token.Line += 1; }
+            
             return _tokenList;
         }
     }
