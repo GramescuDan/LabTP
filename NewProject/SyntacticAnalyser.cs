@@ -269,16 +269,111 @@ namespace NewProject.Models
             _iterator = ins;
             return false;
         }
-
         private bool exprUnary()
         {
             int ins = _iterator;
-            
-            
+
+            if (Consume(EnumCodes.SUB))
+            {
+                if (exprUnary())
+                {
+                    return true;
+                }
+                else
+                {
+                    ErrMessage("Missing Unary expression after -");
+                }
+            }
+
+            if (Consume(EnumCodes.NOT))
+            {
+                if (exprUnary())
+                {
+                    return true;
+                }
+                else
+                {
+                    ErrMessage("Missing Unary expression after !");
+                }
+            }
+
+            if (exprPostfix())
+            {
+                return true;
+            }
             
             _iterator = ins;
             return false; 
         }
+
+        private bool exprPostfix()
+        {
+            int ins = _iterator;
+
+            if (exprPrimary())
+            {
+                if (exprPostfixPrim())
+                {
+                    return true;
+                }
+            }
+            
+            _iterator = ins;
+            return false;
+        }
+
+        private bool exprPrimary()
+        {
+            int ins = _iterator;
+
+            if (Consume(EnumCodes.ID))
+            {
+                
+            }
+            
+            _iterator = ins;
+            return false;
+        }
+
+        private bool expr()
+        {
+            throw new NotImplementedException();
+        }
+
+        private bool exprPostfixPrim()
+        {
+            
+            if (Consume(EnumCodes.LBREAK))
+            {
+                if (expr())
+                {
+                    if (Consume(EnumCodes.RBREAK))
+                    {
+                        if (exprPostfixPrim())
+                        {
+                            return true;
+                        }
+                    }
+                    ErrMessage("Missing ] after expression");
+                }
+                ErrMessage("Missing expression after [");
+            }
+
+            if (Consume(EnumCodes.DOT))
+            {
+                if (Consume(EnumCodes.ID))
+                {
+                    if (exprPostfixPrim())
+                    {
+                        return true;
+                    }
+                }
+                ErrMessage("Field name missing  after .");
+            }
+            
+            return true;
+        }
+
 
         private bool exprMulPrim()
         {
@@ -290,7 +385,9 @@ namespace NewProject.Models
                     {
                         return true;
                     }
+                    ErrMessage("Missing mul expression after cast");
                 }
+                ErrMessage("Missing cast after *");
             }
             
             return true;
@@ -306,7 +403,9 @@ namespace NewProject.Models
                     {
                         return true;
                     }
+                    ErrMessage("missing add expression after mul expression");
                 }
+                ErrMessage("Missing mul expression after +");
             }else if (Consume(EnumCodes.SUB))
             {
                 if (exprMul())
@@ -427,16 +526,8 @@ namespace NewProject.Models
         
         public void PrintTokens()
         {
-            foreach (Token token in _tokenList)
-            {
-                Console.Write(token.Line+ ":");
-                Console.Write(token.Code);
-                if (token.Code == EnumCodes.ID || token.Code == EnumCodes.CT_INT || token.Code == EnumCodes.CT_REAL || token.Code == EnumCodes.CT_CHAR || token.Code == EnumCodes.CT_STRING)
-                { 
-                    Console.Write(" ->" + token.Value);  
-                }
-                Console.WriteLine();
-            }
+            
+            Console.WriteLine(StructDefine());
         }
     }
 }
