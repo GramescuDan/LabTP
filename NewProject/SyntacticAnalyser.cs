@@ -328,7 +328,45 @@ namespace NewProject.Models
 
             if (Consume(EnumCodes.ID))
             {
+                if (Consume(EnumCodes.LPAR))
+                {
+                    if (expr())
+                    {
+                        while (Consume(EnumCodes.COMMA) && expr()) { }
+                    }
+                    
+                    if(Consume(EnumCodes.RPAR)) { }
+                }
                 
+                return true;
+            }
+
+            if (Consume(EnumCodes.CT_INT))
+            {
+                return true;
+            }
+            if (Consume(EnumCodes.CT_REAL))
+            {
+                return true;
+            }
+            if (Consume(EnumCodes.CT_CHAR))
+            {
+                return true;
+            }
+            if (Consume(EnumCodes.CT_STRING))
+            {
+                return true;
+            }
+
+            if (Consume(EnumCodes.LPAR))
+            {
+                if (expr())
+                {
+                    if (Consume(EnumCodes.RPAR))
+                    {
+                        return true;
+                    }
+                }
             }
             
             _iterator = ins;
@@ -337,7 +375,39 @@ namespace NewProject.Models
 
         private bool expr()
         {
-            throw new NotImplementedException();
+            int ins = _iterator;
+            if (exprAssign())
+            {
+                return true;
+            }
+
+            _iterator = ins;
+            return false;
+        }
+
+        private bool exprAssign()
+        {
+            int ins = _iterator;
+            if (exprUnary())
+            {
+                if (Consume(EnumCodes.ASSIGN))
+                {
+                    if (exprAssign())
+                    {
+                        return true;
+                    }
+                    ErrMessage("Missing Assign expression after assign");
+                }
+                ErrMessage("Missing == after expression");
+            }
+
+            if (exprOr())
+            {
+                return true;
+            }
+
+            _iterator = ins;
+            return false;
         }
 
         private bool exprPostfixPrim()
