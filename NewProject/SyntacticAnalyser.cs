@@ -410,6 +410,206 @@ namespace NewProject.Models
             return false;
         }
 
+        private bool stmCompound()
+        {
+            int ins = _iterator;
+
+            if (Consume(EnumCodes.LACC))
+            {
+                while( VarDefine() || stm()){}
+
+                if (Consume(EnumCodes.RACC))
+                {
+                    return true;
+                }
+            }
+            
+            _iterator = ins;
+            return false;
+        }
+
+        private bool stm()
+        {
+            int ins = _iterator;
+            if (stmCompound())
+            {
+                return true;
+            }
+
+            if (Consume(EnumCodes.IF))
+            {
+                if (Consume(EnumCodes.LPAR))
+                {
+                    if (expr())
+                    {
+                        if (Consume(EnumCodes.RPAR))
+                        {
+                            if (stm())
+                            {
+                                if (Consume(EnumCodes.ELSE))
+                                {
+                                    if(stm()){}
+                                }
+                                
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (Consume(EnumCodes.WHILE))
+            {
+                if (Consume(EnumCodes.LPAR))
+                {
+                    if (expr())
+                    {
+                        if (Consume(EnumCodes.RPAR))
+                        {
+                            if (stm())
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (Consume(EnumCodes.FOR))
+            {
+                if (Consume(EnumCodes.LPAR))
+                {
+                    if(expr()){}
+
+                    if (Consume(EnumCodes.SEMICOLON))
+                    {
+                        if(expr()){}
+                        
+                        if (Consume(EnumCodes.SEMICOLON))
+                        {
+                            if(expr()){}
+
+                            if (Consume(EnumCodes.RPAR))
+                            {
+                                if (stm())
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (Consume(EnumCodes.BREAK))
+            {
+                if (Consume(EnumCodes.SEMICOLON))
+                {
+                    return true;
+                }
+            }
+
+            if (Consume(EnumCodes.RETURN))
+            {
+                if(expr()){}
+
+                if (Consume(EnumCodes.SEMICOLON))
+                {
+                    return true;
+                }
+            }
+            if(expr()){}
+
+            if (Consume(EnumCodes.SEMICOLON))
+            {
+                return true;
+            }
+                
+            _iterator = ins;
+            return false;
+        }
+
+        private bool unit()
+        {
+            while (true)
+            {
+                if (VarDefine())
+                {
+                    continue;
+                }
+                else if (funDef())
+                {
+                    continue;
+                }
+                else if (VarDefine())
+                {
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (Consume(EnumCodes.END))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool funDef()
+        {
+            int ins = _iterator;
+            if (TypeBase())
+            {
+                if (Consume(EnumCodes.ID))
+                {
+                    if (Consume(EnumCodes.LPAR))
+                    {
+                        if (funParam())
+                        {
+                            while (Consume(EnumCodes.COMMA) && funParam()){}
+
+                            if (Consume(EnumCodes.RPAR))
+                            {
+                                if (stmCompound())
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else if (Consume(EnumCodes.VOID))
+            {
+                if (Consume(EnumCodes.ID))
+                {
+                    if (Consume(EnumCodes.LPAR))
+                    {
+                        if (funParam())
+                        {
+                            while (Consume(EnumCodes.COMMA) && funParam()){}
+
+                            if (Consume(EnumCodes.RPAR))
+                            {
+                                if (stmCompound())
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            _iterator = ins;
+            return false;
+        }
+
+
         private bool exprPostfixPrim()
         {
             
@@ -597,7 +797,7 @@ namespace NewProject.Models
         public void PrintTokens()
         {
             
-            Console.WriteLine(StructDefine());
+            Console.WriteLine(unit());
         }
     }
 }
