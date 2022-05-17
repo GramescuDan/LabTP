@@ -259,6 +259,14 @@ namespace NewProject.Models
                         {
                             return true;
                         }
+                        else
+                        {
+                            ErrMessage("Invalid expression after cast");
+                        }
+                    }
+                    else
+                    {
+                        ErrMessage("missing ) after (");
                     }
                 }
             }else if (exprUnary())
@@ -332,12 +340,30 @@ namespace NewProject.Models
                 {
                     if (expr())
                     {
-                        while (Consume(EnumCodes.COMMA) && expr()) { }
+                        while (true)
+                        {
+                            if (Consume(EnumCodes.COMMA))
+                            {
+                                if(expr()){}
+                                else
+                                {
+                                    ErrMessage("Missing expression after ,");
+                                }
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            
+                        }
                     }
-                    
-                    if(Consume(EnumCodes.RPAR)) { }
+
+                    if (Consume(EnumCodes.RPAR)) { }
+                    else
+                    {
+                        ErrMessage("Missing ) after (");
+                    }
                 }
-                
                 return true;
             }
 
@@ -366,6 +392,15 @@ namespace NewProject.Models
                     {
                         return true;
                     }
+                    else
+                    {
+                        ErrMessage("Missing ) after (");
+                    }
+                }
+                else
+                {
+                    _iterator = ins;
+                    return false;
                 }
             }
             
@@ -612,7 +647,6 @@ namespace NewProject.Models
 
         private bool exprPostfixPrim()
         {
-            
             if (Consume(EnumCodes.LBREAK))
             {
                 if (expr())
@@ -638,7 +672,10 @@ namespace NewProject.Models
                         return true;
                     }
                 }
-                ErrMessage("Field name missing  after .");
+                else
+                {
+                    ErrMessage("Field name missing  after .");
+                }
             }
             
             return true;
@@ -660,6 +697,19 @@ namespace NewProject.Models
                 ErrMessage("Missing cast after *");
             }
             
+            if (Consume(EnumCodes.DIV))
+            {
+                if (exprCast())
+                {
+                    if (exprMulPrim())
+                    {
+                        return true;
+                    }
+                    ErrMessage("Missing mul expression after cast");
+                }
+                ErrMessage("Missing cast after /");
+            }
+            
             return true;
         }
         
@@ -676,7 +726,8 @@ namespace NewProject.Models
                     ErrMessage("missing add expression after mul expression");
                 }
                 ErrMessage("Missing mul expression after +");
-            }else if (Consume(EnumCodes.SUB))
+            }
+            if (Consume(EnumCodes.SUB))
             {
                 if (exprMul())
                 {
