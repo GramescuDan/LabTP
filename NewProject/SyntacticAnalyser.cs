@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualBasic;
 using NewProject.Interfaces;
 
 namespace NewProject.Models
@@ -15,7 +13,6 @@ namespace NewProject.Models
         public SyntacticAnalyser(ITokenHandler tokenHandler)
         {
             _tokenList = tokenHandler.GetTokens();
-            _iterator = 0;
         }
         
         private void ErrMessage(String message)
@@ -36,6 +33,8 @@ namespace NewProject.Models
 
         private bool TypeBase()
         {
+            int ins = _iterator;
+            
             if (Consume(EnumCodes.INT))
             {
                 return true;
@@ -54,9 +53,13 @@ namespace NewProject.Models
                 {
                     return true;
                 }
-                ErrMessage("Missing name for structure");
+                else
+                {
+                    ErrMessage("Missing { for structure or this is not an name for the var"); 
+                }
             }
             
+            _iterator = ins;
             return false;
         }
 
@@ -82,7 +85,7 @@ namespace NewProject.Models
             return false;
         }
         
-        private bool VarDefine()
+        private bool VarDef()
         {
             int ins = _iterator;
             if (TypeBase())
@@ -100,13 +103,17 @@ namespace NewProject.Models
                     }
                     ErrMessage("Missing ;");
                 }
+                else
+                {
+                    ErrMessage("Missing name after type");
+                }
             }
 
             _iterator = ins;
             return false;
         }
 
-        private bool StructDefine()
+        private bool StructDef()
         {
             int ins=_iterator;
             if (Consume(EnumCodes.STRUCT))
@@ -115,7 +122,17 @@ namespace NewProject.Models
                 {
                     if (Consume(EnumCodes.LACC))
                     {
-                        while (VarDefine()) { }
+                        while (true)
+                        {
+                            if (VarDef())
+                            {
+                                
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
 
                         if (Consume(EnumCodes.RACC))
                         {
@@ -123,15 +140,25 @@ namespace NewProject.Models
                             {
                                 return true;
                             }
-                            ErrMessage("Missing ;");
+                            else
+                            {
+                                ErrMessage("Missing ;"); 
+                            }
                         }
-                        ErrMessage("Missing }");
+                        else
+                        {
+                            ErrMessage("Missing } after {");
+                        }
+                        
                     }
-                    ErrMessage("Missing {");
+                    else
+                    {
+                        return false;
+                    }
                 }
                 ErrMessage("Missing structure name");
             }
-
+            
             _iterator = ins;
             return false;   
         }
@@ -143,10 +170,10 @@ namespace NewProject.Models
             {
                 if (Consume(EnumCodes.ID))
                 {
-                    if (ArrayDeclaration()) ;
+                    if (ArrayDeclaration()) {};
                     return true;
                 }
-                ErrMessage("Missing name for the parameter");
+                ErrMessage("Missing name for the variable");
             }
 
             _iterator = ins;
@@ -252,7 +279,7 @@ namespace NewProject.Models
             {
                 if (TypeBase())
                 {
-                    if (ArrayDeclaration()) ;
+                    if (ArrayDeclaration()) {};
                     if (Consume(EnumCodes.RPAR))
                     {
                         if (exprCast())
@@ -433,7 +460,6 @@ namespace NewProject.Models
                     }
                     ErrMessage("Missing Assign expression after assign");
                 }
-                ErrMessage("Missing == after expression");
             }
 
             if (exprOr())
@@ -451,11 +477,23 @@ namespace NewProject.Models
 
             if (Consume(EnumCodes.LACC))
             {
-                while( VarDefine() || stm()){}
+                while (true)
+                {
+                    if(VarDef()){}
+                    else if (stm()) {}
+                    else
+                    {
+                        break;
+                    }
+                }
 
                 if (Consume(EnumCodes.RACC))
                 {
                     return true;
+                }
+                else
+                {
+                    ErrMessage("Missing } after {");
                 }
             }
             
@@ -483,13 +521,36 @@ namespace NewProject.Models
                             {
                                 if (Consume(EnumCodes.ELSE))
                                 {
-                                    if(stm()){}
+                                    if (stm())
+                                    {
+                                        return true;
+                                    }
+                                    else
+                                    {
+                                        ErrMessage("missing statement after else");
+                                    }
                                 }
                                 
                                 return true;
                             }
+                            else
+                            {
+                                ErrMessage("Missing statement after if");
+                            }
+                        }
+                        else
+                        {
+                            ErrMessage("Missing ) after (");
                         }
                     }
+                    else
+                    {
+                        ErrMessage("Missing expression after (");
+                    }
+                }
+                else
+                {
+                    ErrMessage("Missing ( after if");
                 }
             }
 
@@ -505,8 +566,23 @@ namespace NewProject.Models
                             {
                                 return true;
                             }
+                            else
+                            {
+                                ErrMessage("Missing statement in while");
+                            }
+                        }else
+                        {
+                            ErrMessage("Missing ) after (");
                         }
                     }
+                    else
+                    {
+                        ErrMessage("Missing expression after (");
+                    }
+                }
+                else
+                {
+                    ErrMessage("Missing ( after while statement");
                 }
             }
 
@@ -530,9 +606,29 @@ namespace NewProject.Models
                                 {
                                     return true;
                                 }
+                                else
+                                {
+                                    ErrMessage("Missing statement after for");
+                                }
+                            }
+                            else
+                            {
+                                ErrMessage("Missing ) after (");
                             }
                         }
+                        else
+                        {
+                            ErrMessage("Missing 2nd ; in for statement");
+                        }
                     }
+                    else
+                    {
+                        ErrMessage("Missing 1st ; in for statement");
+                    }
+                }
+                else
+                {
+                    ErrMessage("Missing ( after for");
                 }
             }
 
@@ -541,6 +637,10 @@ namespace NewProject.Models
                 if (Consume(EnumCodes.SEMICOLON))
                 {
                     return true;
+                }
+                else
+                {
+                    ErrMessage("Missing ; after break");
                 }
             }
 
@@ -552,7 +652,12 @@ namespace NewProject.Models
                 {
                     return true;
                 }
+                else
+                {
+                    ErrMessage("Missing ; after return");
+                }
             }
+            
             if(expr()){}
 
             if (Consume(EnumCodes.SEMICOLON))
@@ -566,20 +671,11 @@ namespace NewProject.Models
 
         private bool unit()
         {
-            while (true)
+            for(;;)
             {
-                if (VarDefine())
-                {
-                    continue;
-                }
-                else if (funDef())
-                {
-                    continue;
-                }
-                else if (VarDefine())
-                {
-                    continue;
-                }
+                if (StructDef()) { }
+                else if(funDef()){ }
+                else if(VarDef()){ }
                 else
                 {
                     break;
@@ -589,6 +685,11 @@ namespace NewProject.Models
             if (Consume(EnumCodes.END))
             {
                 return true;
+            }
+            else
+            {
+                Console.WriteLine(_iterator);
+                ErrMessage("Missing end token or something happened");
             }
 
             return false;
@@ -605,7 +706,24 @@ namespace NewProject.Models
                     {
                         if (funParam())
                         {
-                            while (Consume(EnumCodes.COMMA) && funParam()){}
+                            while (true)
+                            {
+                                if (Consume(EnumCodes.COMMA))
+                                {
+                                    if (funParam())
+                                    {
+                                        
+                                    }
+                                    else
+                                    {
+                                        ErrMessage("No function parameter after ,");
+                                    }
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
 
                             if (Consume(EnumCodes.RPAR))
                             {
@@ -614,10 +732,23 @@ namespace NewProject.Models
                                     return true;
                                 }
                             }
+                            else
+                            {
+                                ErrMessage("Missing ) after (");
+                            }
                         }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        return false;
                     }
                 }
             }
+            
             else if (Consume(EnumCodes.VOID))
             {
                 if (Consume(EnumCodes.ID))
@@ -626,7 +757,24 @@ namespace NewProject.Models
                     {
                         if (funParam())
                         {
-                            while (Consume(EnumCodes.COMMA) && funParam()){}
+                            while (true)
+                            {
+                                if (Consume(EnumCodes.COMMA))
+                                {
+                                    if (funDef())
+                                    {
+                                        
+                                    }
+                                    else
+                                    {
+                                        ErrMessage("missing function def after ,");
+                                    }
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
 
                             if (Consume(EnumCodes.RPAR))
                             {
@@ -635,7 +783,19 @@ namespace NewProject.Models
                                     return true;
                                 }
                             }
+                            else
+                            {
+                                ErrMessage("Missing ) after (");
+                            }
                         }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        return false;
                     }
                 }
             }
@@ -723,9 +883,8 @@ namespace NewProject.Models
                     {
                         return true;
                     }
-                    ErrMessage("missing add expression after mul expression");
                 }
-                ErrMessage("Missing mul expression after +");
+                else {ErrMessage("Missing mul expression after +");}
             }
             if (Consume(EnumCodes.SUB))
             {
@@ -736,6 +895,7 @@ namespace NewProject.Models
                         return true;
                     }
                 }
+                else{ErrMessage("Invalid expression after -");}
             }
             
             return true;
@@ -752,6 +912,10 @@ namespace NewProject.Models
                         return true;
                     }
                 }
+                else
+                {
+                    ErrMessage("invalid expression after <");
+                }
             }else if (Consume(EnumCodes.LESSEQ))
             {
                 if (exprAdd())
@@ -760,6 +924,10 @@ namespace NewProject.Models
                     {
                         return true;
                     }
+                }
+                else
+                {
+                    ErrMessage("invalid expression after <=");
                 }
             }else if (Consume(EnumCodes.GREATER))
             {
@@ -770,6 +938,10 @@ namespace NewProject.Models
                         return true;
                     }
                 }
+                else
+                {
+                    ErrMessage("invalid expression after >");
+                }
             }else 
             if (Consume(EnumCodes.GREATEREQ))
             {
@@ -779,6 +951,10 @@ namespace NewProject.Models
                     {
                         return true;
                     }
+                }
+                else
+                {
+                    ErrMessage("invalid expression after >=");
                 }
             }
             return true;
@@ -794,6 +970,10 @@ namespace NewProject.Models
                     {
                         return true;
                     }
+                }
+                else
+                {
+                    ErrMessage("invalid expression after ||");
                 }
             }
             return true;
@@ -811,6 +991,10 @@ namespace NewProject.Models
                         return true;
                     }
                 }
+                else
+                {
+                ErrMessage("invalid expression after &&");    
+                }
             }
             
             return true;
@@ -820,23 +1004,31 @@ namespace NewProject.Models
             
             if (Consume(EnumCodes.EQUAL))
             {
-                if (exprEq())
+                if (exprRel())
                 {
                     if (exprEqPrim())
                     {
                         return true;
                     }
                 }
+                else
+                {
+                    ErrMessage("invalid expression after ==");
+                }
             }
             
             if (Consume(EnumCodes.NOTEQ))
             {
-                if (exprEq())
+                if (exprRel())
                 {
                     if (exprEqPrim())
                     {
                         return true;
                     }
+                } 
+                else
+                {
+                    ErrMessage("invalid expression after !=");
                 }
             }
             
@@ -847,7 +1039,10 @@ namespace NewProject.Models
         
         public void PrintTokens()
         {
-            
+            /*foreach (var token in _tokenList)
+            {
+              Console.WriteLine(token.Code);  
+            }*/
             Console.WriteLine(unit());
         }
     }

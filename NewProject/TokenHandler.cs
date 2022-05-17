@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.VisualBasic;
 using NewProject.Interfaces;
 using NewProject.Models;
 
@@ -225,7 +224,7 @@ namespace NewProject
                 switch (state)
                 {
                     case 0:
-                        if (_lines[_line][_crtChar].CompareTo(' ') == 0 || _lines[_line][_crtChar].CompareTo('\t') == 0|| _lines[_line][_crtChar].CompareTo('\r') == 0)
+                        if (_lines[_line][_crtChar].CompareTo(' ') == 0 || _lines[_line][_crtChar].CompareTo('\t') == 0 || _lines[_line][_crtChar].CompareTo('\r') == 0|| _lines[_line][_crtChar].CompareTo('\n') == 0)
                         {
                             _crtChar++;
                         }
