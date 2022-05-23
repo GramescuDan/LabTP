@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using NewProject.Interfaces;
+using NewProject.Models;
 
-namespace NewProject.Models
+namespace NewProject
 {
     public class SyntacticAnalyser
     {
@@ -14,7 +15,7 @@ namespace NewProject.Models
         {
             _tokenList = tokenHandler.GetTokens();
         }
-        
+
         private void ErrMessage(String message)
         {
             Console.Error.WriteLine($"At line {_tokenList[_iterator].Line}: {message}.Please Resolve!");
@@ -25,28 +26,33 @@ namespace NewProject.Models
         {
             if (_tokenList[_iterator].Code.Equals(code))
             {
+                Console.WriteLine(code);
                 _iterator++;
                 return true;
             }
+
             return false;
         }
 
         private bool TypeBase()
         {
             int ins = _iterator;
-            
+
             if (Consume(EnumCodes.INT))
             {
                 return true;
             }
+
             if (Consume(EnumCodes.DOUBLE))
             {
                 return true;
             }
+
             if (Consume(EnumCodes.CHAR))
             {
                 return true;
             }
+
             if (Consume(EnumCodes.STRUCT))
             {
                 if (Consume(EnumCodes.ID))
@@ -55,7 +61,7 @@ namespace NewProject.Models
                 }
                 else
                 {
-                    ErrMessage("Missing { for structure or this is not an name for the var"); 
+                    ErrMessage("Missing { for structure or this is not an name for the var");
                 }
             }
             
@@ -70,21 +76,20 @@ namespace NewProject.Models
             {
                 if (Consume(EnumCodes.CT_INT))
                 {
-                    
                 }
 
                 if (Consume(EnumCodes.RBREAK))
                 {
                     return true;
                 }
+
                 ErrMessage("Missing ]");
-                
             }
 
             _iterator = ins;
             return false;
         }
-        
+
         private bool VarDef()
         {
             int ins = _iterator;
@@ -94,13 +99,13 @@ namespace NewProject.Models
                 {
                     if (ArrayDeclaration())
                     {
-                        
                     }
 
                     if (Consume(EnumCodes.SEMICOLON))
                     {
                         return true;
                     }
+
                     ErrMessage("Missing ;");
                 }
                 else
@@ -115,7 +120,7 @@ namespace NewProject.Models
 
         private bool StructDef()
         {
-            int ins=_iterator;
+            int ins = _iterator;
             if (Consume(EnumCodes.STRUCT))
             {
                 if (Consume(EnumCodes.ID))
@@ -126,7 +131,6 @@ namespace NewProject.Models
                         {
                             if (VarDef())
                             {
-                                
                             }
                             else
                             {
@@ -142,25 +146,26 @@ namespace NewProject.Models
                             }
                             else
                             {
-                                ErrMessage("Missing ;"); 
+                                ErrMessage("Missing ;");
                             }
                         }
                         else
                         {
                             ErrMessage("Missing } after {");
                         }
-                        
                     }
                     else
                     {
+                        _iterator = ins;
                         return false;
                     }
                 }
+
                 ErrMessage("Missing structure name");
             }
-            
+
             _iterator = ins;
-            return false;   
+            return false;
         }
 
         private bool funParam()
@@ -170,9 +175,14 @@ namespace NewProject.Models
             {
                 if (Consume(EnumCodes.ID))
                 {
-                    if (ArrayDeclaration()) {};
+                    if (ArrayDeclaration())
+                    {
+                    }
+
+                    ;
                     return true;
                 }
+
                 ErrMessage("Missing name for the variable");
             }
 
@@ -188,13 +198,13 @@ namespace NewProject.Models
                 if (exprOrPrim())
                 {
                     return true;
-                } 
+                }
             }
 
             _iterator = ins;
             return false;
         }
-        
+
         private bool exprAnd()
         {
             int ins = _iterator;
@@ -210,6 +220,7 @@ namespace NewProject.Models
             _iterator = ins;
             return false;
         }
+
         private bool exprEq()
         {
             int ins = _iterator;
@@ -221,10 +232,11 @@ namespace NewProject.Models
                     return true;
                 }
             }
-            
+
             _iterator = ins;
             return false;
         }
+
         private bool exprRel()
         {
             int ins = _iterator;
@@ -236,11 +248,11 @@ namespace NewProject.Models
                     return true;
                 }
             }
-            
+
             _iterator = ins;
             return false;
         }
-        
+
         private bool exprAdd()
         {
             int ins = _iterator;
@@ -252,10 +264,11 @@ namespace NewProject.Models
                     return true;
                 }
             }
-            
+
             _iterator = ins;
             return false;
         }
+
         private bool exprMul()
         {
             int ins = _iterator;
@@ -265,12 +278,13 @@ namespace NewProject.Models
                 if (exprMulPrim())
                 {
                     return true;
-                }  
+                }
             }
-            
+
             _iterator = ins;
             return false;
         }
+
         private bool exprCast()
         {
             int ins = _iterator;
@@ -279,7 +293,7 @@ namespace NewProject.Models
             {
                 if (TypeBase())
                 {
-                    if (ArrayDeclaration()) {};
+                    if (ArrayDeclaration()) ;
                     if (Consume(EnumCodes.RPAR))
                     {
                         if (exprCast())
@@ -296,14 +310,16 @@ namespace NewProject.Models
                         ErrMessage("missing ) after (");
                     }
                 }
-            }else if (exprUnary())
+            }
+            else if (exprUnary())
             {
                 return true;
             }
-            
+
             _iterator = ins;
             return false;
         }
+
         private bool exprUnary()
         {
             int ins = _iterator;
@@ -336,9 +352,9 @@ namespace NewProject.Models
             {
                 return true;
             }
-            
+
             _iterator = ins;
-            return false; 
+            return false;
         }
 
         private bool exprPostfix()
@@ -352,7 +368,7 @@ namespace NewProject.Models
                     return true;
                 }
             }
-            
+
             _iterator = ins;
             return false;
         }
@@ -371,7 +387,9 @@ namespace NewProject.Models
                         {
                             if (Consume(EnumCodes.COMMA))
                             {
-                                if(expr()){}
+                                if (expr())
+                                {
+                                }
                                 else
                                 {
                                     ErrMessage("Missing expression after ,");
@@ -381,16 +399,18 @@ namespace NewProject.Models
                             {
                                 break;
                             }
-                            
                         }
                     }
 
-                    if (Consume(EnumCodes.RPAR)) { }
+                    if (Consume(EnumCodes.RPAR))
+                    {
+                    }
                     else
                     {
                         ErrMessage("Missing ) after (");
                     }
                 }
+
                 return true;
             }
 
@@ -398,14 +418,17 @@ namespace NewProject.Models
             {
                 return true;
             }
+
             if (Consume(EnumCodes.CT_REAL))
             {
                 return true;
             }
+
             if (Consume(EnumCodes.CT_CHAR))
             {
                 return true;
             }
+
             if (Consume(EnumCodes.CT_STRING))
             {
                 return true;
@@ -430,7 +453,7 @@ namespace NewProject.Models
                     return false;
                 }
             }
-            
+
             _iterator = ins;
             return false;
         }
@@ -458,6 +481,7 @@ namespace NewProject.Models
                     {
                         return true;
                     }
+
                     ErrMessage("Missing Assign expression after assign");
                 }
             }
@@ -479,8 +503,12 @@ namespace NewProject.Models
             {
                 while (true)
                 {
-                    if(VarDef()){}
-                    else if (stm()) {}
+                    if (VarDef())
+                    {
+                    }
+                    else if (stm())
+                    {
+                    }
                     else
                     {
                         break;
@@ -496,7 +524,7 @@ namespace NewProject.Models
                     ErrMessage("Missing } after {");
                 }
             }
-            
+
             _iterator = ins;
             return false;
         }
@@ -530,7 +558,7 @@ namespace NewProject.Models
                                         ErrMessage("missing statement after else");
                                     }
                                 }
-                                
+
                                 return true;
                             }
                             else
@@ -570,7 +598,8 @@ namespace NewProject.Models
                             {
                                 ErrMessage("Missing statement in while");
                             }
-                        }else
+                        }
+                        else
                         {
                             ErrMessage("Missing ) after (");
                         }
@@ -590,15 +619,21 @@ namespace NewProject.Models
             {
                 if (Consume(EnumCodes.LPAR))
                 {
-                    if(expr()){}
+                    if (expr())
+                    {
+                    }
 
                     if (Consume(EnumCodes.SEMICOLON))
                     {
-                        if(expr()){}
-                        
+                        if (expr())
+                        {
+                        }
+
                         if (Consume(EnumCodes.SEMICOLON))
                         {
-                            if(expr()){}
+                            if (expr())
+                            {
+                            }
 
                             if (Consume(EnumCodes.RPAR))
                             {
@@ -646,7 +681,9 @@ namespace NewProject.Models
 
             if (Consume(EnumCodes.RETURN))
             {
-                if(expr()){}
+                if (expr())
+                {
+                }
 
                 if (Consume(EnumCodes.SEMICOLON))
                 {
@@ -657,38 +694,48 @@ namespace NewProject.Models
                     ErrMessage("Missing ; after return");
                 }
             }
-            
-            if(expr()){}
+
+            if (expr())
+            {
+            }
 
             if (Consume(EnumCodes.SEMICOLON))
             {
                 return true;
             }
-                
+
             _iterator = ins;
             return false;
         }
 
         private bool unit()
         {
-            for(;;)
+            for (;;)
             {
-                if (StructDef()) { }
-                else if(funDef()){ }
-                else if(VarDef()){ }
+                if (StructDef())
+                {
+                     
+                }
+                else if (funDef())
+                {
+                    
+                }
+                else if (VarDef())
+                {
+                    
+                }
                 else
                 {
                     break;
                 }
             }
-
             if (Consume(EnumCodes.END))
             {
                 return true;
             }
             else
             {
-                Console.WriteLine(_iterator);
+                Console.WriteLine(_tokenList[_iterator].Code);
                 ErrMessage("Missing end token or something happened");
             }
 
@@ -712,7 +759,6 @@ namespace NewProject.Models
                                 {
                                     if (funParam())
                                     {
-                                        
                                     }
                                     else
                                     {
@@ -724,22 +770,18 @@ namespace NewProject.Models
                                     break;
                                 }
                             }
+                        }
 
-                            if (Consume(EnumCodes.RPAR))
+                        if (Consume(EnumCodes.RPAR))
+                        {
+                            if (stmCompound())
                             {
-                                if (stmCompound())
-                                {
-                                    return true;
-                                }
-                            }
-                            else
-                            {
-                                ErrMessage("Missing ) after (");
+                                return true;
                             }
                         }
                         else
                         {
-                            return false;
+                            ErrMessage("Missing ) after (");
                         }
                     }
                     else
@@ -748,8 +790,8 @@ namespace NewProject.Models
                     }
                 }
             }
-            
-            else if (Consume(EnumCodes.VOID))
+
+            if (Consume(EnumCodes.VOID))
             {
                 if (Consume(EnumCodes.ID))
                 {
@@ -763,7 +805,6 @@ namespace NewProject.Models
                                 {
                                     if (funDef())
                                     {
-                                        
                                     }
                                     else
                                     {
@@ -775,23 +816,20 @@ namespace NewProject.Models
                                     break;
                                 }
                             }
-
-                            if (Consume(EnumCodes.RPAR))
+                        }
+                        
+                        if (Consume(EnumCodes.RPAR))
+                        {
+                            if (stmCompound())
                             {
-                                if (stmCompound())
-                                {
-                                    return true;
-                                }
-                            }
-                            else
-                            {
-                                ErrMessage("Missing ) after (");
+                                return true;
                             }
                         }
                         else
                         {
-                            return false;
+                            ErrMessage("Missing ) after (");
                         }
+                        
                     }
                     else
                     {
@@ -818,8 +856,10 @@ namespace NewProject.Models
                             return true;
                         }
                     }
+
                     ErrMessage("Missing ] after expression");
                 }
+
                 ErrMessage("Missing expression after [");
             }
 
@@ -837,7 +877,7 @@ namespace NewProject.Models
                     ErrMessage("Field name missing  after .");
                 }
             }
-            
+
             return true;
         }
 
@@ -852,11 +892,13 @@ namespace NewProject.Models
                     {
                         return true;
                     }
+
                     ErrMessage("Missing mul expression after cast");
                 }
+
                 ErrMessage("Missing cast after *");
             }
-            
+
             if (Consume(EnumCodes.DIV))
             {
                 if (exprCast())
@@ -865,14 +907,16 @@ namespace NewProject.Models
                     {
                         return true;
                     }
+
                     ErrMessage("Missing mul expression after cast");
                 }
+
                 ErrMessage("Missing cast after /");
             }
-            
+
             return true;
         }
-        
+
         private bool exprAddPrim()
         {
             if (Consume(EnumCodes.ADD))
@@ -884,8 +928,12 @@ namespace NewProject.Models
                         return true;
                     }
                 }
-                else {ErrMessage("Missing mul expression after +");}
+                else
+                {
+                    ErrMessage("Missing mul expression after +");
+                }
             }
+
             if (Consume(EnumCodes.SUB))
             {
                 if (exprMul())
@@ -895,12 +943,15 @@ namespace NewProject.Models
                         return true;
                     }
                 }
-                else{ErrMessage("Invalid expression after -");}
+                else
+                {
+                    ErrMessage("Invalid expression after -");
+                }
             }
-            
+
             return true;
         }
-        
+
         private bool exprRelPrim()
         {
             if (Consume(EnumCodes.LESS))
@@ -916,7 +967,8 @@ namespace NewProject.Models
                 {
                     ErrMessage("invalid expression after <");
                 }
-            }else if (Consume(EnumCodes.LESSEQ))
+            }
+            else if (Consume(EnumCodes.LESSEQ))
             {
                 if (exprAdd())
                 {
@@ -929,7 +981,8 @@ namespace NewProject.Models
                 {
                     ErrMessage("invalid expression after <=");
                 }
-            }else if (Consume(EnumCodes.GREATER))
+            }
+            else if (Consume(EnumCodes.GREATER))
             {
                 if (exprAdd())
                 {
@@ -942,8 +995,8 @@ namespace NewProject.Models
                 {
                     ErrMessage("invalid expression after >");
                 }
-            }else 
-            if (Consume(EnumCodes.GREATEREQ))
+            }
+            else if (Consume(EnumCodes.GREATEREQ))
             {
                 if (exprAdd())
                 {
@@ -957,9 +1010,10 @@ namespace NewProject.Models
                     ErrMessage("invalid expression after >=");
                 }
             }
+
             return true;
         }
-        
+
         private bool exprOrPrim()
         {
             if (Consume(EnumCodes.OR))
@@ -976,12 +1030,12 @@ namespace NewProject.Models
                     ErrMessage("invalid expression after ||");
                 }
             }
+
             return true;
         }
 
         private bool exprAndPrim()
         {
-            
             if (Consume(EnumCodes.AND))
             {
                 if (exprEq())
@@ -993,15 +1047,15 @@ namespace NewProject.Models
                 }
                 else
                 {
-                ErrMessage("invalid expression after &&");    
+                    ErrMessage("invalid expression after &&");
                 }
             }
-            
+
             return true;
         }
+
         private bool exprEqPrim()
         {
-            
             if (Consume(EnumCodes.EQUAL))
             {
                 if (exprRel())
@@ -1016,7 +1070,7 @@ namespace NewProject.Models
                     ErrMessage("invalid expression after ==");
                 }
             }
-            
+
             if (Consume(EnumCodes.NOTEQ))
             {
                 if (exprRel())
@@ -1025,18 +1079,17 @@ namespace NewProject.Models
                     {
                         return true;
                     }
-                } 
+                }
                 else
                 {
                     ErrMessage("invalid expression after !=");
                 }
             }
-            
+
             return true;
         }
-        
-        
-        
+
+
         public void PrintTokens()
         {
             /*foreach (var token in _tokenList)
