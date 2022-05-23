@@ -30,7 +30,7 @@ namespace NewProject
                 _iterator++;
                 return true;
             }
-
+            
             return false;
         }
 
@@ -223,7 +223,7 @@ namespace NewProject
 
         private bool exprEq()
         {
-            int ins = _iterator;
+                int ins = _iterator;
 
             if (exprRel())
             {
@@ -484,7 +484,7 @@ namespace NewProject
 
                     ErrMessage("Missing Assign expression after assign");
                 }
-            }
+            }   
 
             if (exprOr())
             {
@@ -786,6 +786,7 @@ namespace NewProject
                     }
                     else
                     {
+                        _iterator = ins;
                         return false;
                     }
                 }
@@ -833,6 +834,7 @@ namespace NewProject
                     }
                     else
                     {
+                        _iterator = ins;
                         return false;
                     }
                 }

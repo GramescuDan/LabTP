@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO.Enumeration;
-using System.Linq;
-using NewProject.Models;
 
 namespace NewProject
 {
