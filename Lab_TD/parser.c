@@ -16,7 +16,7 @@ STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character)
     {
         case 0:
         {
-            printf("state 0\n");
+            printf("state 0: %x \n",current_character);
             if (current_character == '\r')
             {
                 state = 1;
@@ -25,7 +25,7 @@ STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character)
         }
         case 1:
         {
-            printf("state 1\n");
+            printf("state 0: %x \n",current_character);
             if (current_character == '\n')
             {
                 state = 2;
@@ -89,6 +89,7 @@ STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character)
         {printf("state 5: %x\n",current_character);
             if (current_character == 0x0A)
             {
+                state = 0;
                 return STATE_MACHINE_READY_OK;
             }
             else
@@ -293,21 +294,29 @@ void  funBegin(char *filename){
 
     FILE *f;
     unsigned char c;
+    int flag=0;
+    unsigned char prev;
 
     if((f=fopen(filename,"rb"))==NULL){
         printf("eroare deschidere fisier");
     }
-    while(fscanf(f,"%c",&c)==1){
+    while(fscanf(f,"%c",&c) ==1){
 
         STATE_MACHINE_RETURN_VALUE val = parseNextChar(c);
-
-
+        if(prev==c){
+        flag = 1;
+        }
+        printf("%d",flag);
         if(val == STATE_MACHINE_READY_OK) {
-            printf("Done\n");
-            for(int i = 0;i<1000;i++){
-                printf("%d: %s\n",i,mydata.data[i]);
+                prev = c;
+//            for(int i = 0;i<1000;i++){
+//                printf("%d: %s\n",i,mydata.data[i]);
+//            }
+            if(flag == 1){
+                printf("Done\n");
+                break;
             }
-            exit(EXIT_SUCCESS);
+            printf("One down, next to go!");
         }
         else if(val == STATE_MACHINE_READY_WITH_ERROR) {
             printf("Something went wrong :(\n");
