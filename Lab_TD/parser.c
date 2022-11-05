@@ -1,9 +1,14 @@
 #include "parser.h"
 
 AT_COMMAND_DATA mydata;
+static uint32_t state = 0;
+static uint32_t line = 0;
+static uint32_t index = 0;
+
+
+
 STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
 {
-    static uint32_t state = 0;
     switch (state)
     {
         case 0:
@@ -11,7 +16,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
             printf("state 0\n");
             if (current_character == '\r')
             {
-                printf("cr");
+                printf("%c",current_character);
                 state = 1;
             }
             break;
@@ -21,7 +26,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
             if (current_character == '\n')
             {
                 state = 2;
-                printf("lf");
+                printf("%c",current_character);
             }
             else
             {
@@ -34,17 +39,17 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
             if (current_character == 'O')
             {
                 state = 3;
-                printf("o");
+                printf("%c",current_character);
             }
             else if (current_character == 'E')
             {
                 state = 7;
-                printf("e");
+                printf("%c",current_character);
             }
             else if (current_character == '+')
             {
                 state = 14;
-                printf("+");
+                printf("%c",current_character);
             }
 
             else
@@ -58,7 +63,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
             if (current_character == 'K')
             {
                 state = 4;
-                printf("k");
+                printf("%c",current_character);
             }
             else
             {
@@ -72,7 +77,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
             if (current_character == 0x0D)
             {
                 state = 5;
-                printf("cr");
+                printf("%c",current_character);
             }
             else
             {
@@ -99,7 +104,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
             if (current_character == 'R')
             {
                 state = 8;
-                printf("r");
+                printf("%c",current_character);
             }
             else
             {
@@ -113,7 +118,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
             if (current_character == 'R')
             {
                 state = 9;
-                printf("r");
+                printf("%c",current_character);
             }
             else
             {
@@ -127,7 +132,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
             if (current_character == 'O')
             {
                 state = 10;
-                printf("");
+                printf("%c",current_character);
             }
             else
             {
@@ -141,7 +146,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
             if (current_character == 'R')
             {
                 state = 11;
-                printf("");
+                printf("%c",current_character);
             }
             else
             {
@@ -155,7 +160,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
             if (current_character == 0x0D)
             {
                 state = 12;
-                printf("");
+                printf("%c",current_character);
             }
             else
             {
@@ -182,7 +187,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
             if (current_character > 0x20 && current_character < 0x7F)
             {
                 state = 15;
-                printf("");
+                printf("%c",current_character);
             }
             else
             {
@@ -196,12 +201,12 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
             if (current_character == 0X0D)
             {
                 state = 16;
-                printf("");
+                printf("%c",current_character);
             }
             else if (current_character > 0x20 && current_character < 0x7F)
             {
                 state = 15;
-                printf("");
+                printf("%c",current_character);
             }
 
             else
@@ -216,7 +221,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
             if (current_character == 0x0A)
             {
                 state = 17;
-                printf("");
+                printf("%c",current_character);
             }
             else
             {
@@ -230,12 +235,12 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
             if (current_character == 0x0D)
             {
                 state = 18;
-                printf("");
+                printf("%c",current_character);
             }
             else if(current_character == '+')
             {
                 state = 14;
-                printf("");
+                printf("%c",current_character);
             }
 
             else
@@ -250,7 +255,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
             if (current_character == 0x0A)
             {
                 state = 19;
-                printf("");
+                printf("%c",current_character);
             }
             else
             {
@@ -264,12 +269,12 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
             if (current_character == 'O')
             {
                 state = 3;
-                printf("");
+                printf("%c",current_character);
             }
             else if (current_character == 'E')
             {
                 state = 7;
-                printf("");
+                printf("%c",current_character);
             }
             else
             {
@@ -284,6 +289,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
 
 void  fun(){
 
+
     FILE *f;
     unsigned char c;
 
@@ -294,19 +300,15 @@ void  fun(){
 
         STATE_MACHINE_RETURN_VALUE val = at_command_parse(c);
 
-        if(val == STATE_MACHINE_NOT_READY) {
-            printf("n-are baterie");
-        }
-
         if(val == STATE_MACHINE_READY_OK) {
-            printf("s-a citit");
-
+            printf("Done\n");
+            exit(EXIT_SUCCESS);
+        }
+        else if(val == STATE_MACHINE_READY_WITH_ERROR) {
+            printf("Something went wrong :(\n");
+            break;
         }
 
-        if(val == STATE_MACHINE_READY_WITH_ERROR) {
-            printf("eroare citire");
-        }
-        break;
 
     }
 }
