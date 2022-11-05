@@ -1,13 +1,16 @@
+
 #include "parser.h"
 
 AT_COMMAND_DATA mydata;
 static uint32_t state = 0;
 static uint32_t line = 0;
-static uint32_t index = 0;
 
+void addCharInLine(const char current_character){
+    char aux = current_character;
+strncat(mydata.data[line],&aux,1);
+}
 
-
-STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
+STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character)
 {
     switch (state)
     {
@@ -16,17 +19,16 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
             printf("state 0\n");
             if (current_character == '\r')
             {
-                printf("%c",current_character);
                 state = 1;
             }
             break;
         }
         case 1:
         {
+            printf("state 1\n");
             if (current_character == '\n')
             {
                 state = 2;
-                printf("%c",current_character);
             }
             else
             {
@@ -35,21 +37,18 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
             break;
         }
         case 2:
-        {
+        {printf("state 2: %c\n",current_character);
             if (current_character == 'O')
             {
                 state = 3;
-                printf("%c",current_character);
             }
             else if (current_character == 'E')
             {
                 state = 7;
-                printf("%c",current_character);
             }
             else if (current_character == '+')
             {
                 state = 14;
-                printf("%c",current_character);
             }
 
             else
@@ -59,14 +58,14 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
             break;
         }
         case 3:
-        {
+        {   printf("state 3: %c \n",current_character);
             if (current_character == 'K')
             {
                 state = 4;
-                printf("%c",current_character);
             }
             else
             {
+
                 return STATE_MACHINE_READY_WITH_ERROR;
             }
             break;
@@ -74,10 +73,10 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
 
         case 4:
         {
+            printf("state 4: %x\n",current_character);
             if (current_character == 0x0D)
             {
                 state = 5;
-                printf("%c",current_character);
             }
             else
             {
@@ -87,7 +86,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
         }
 
         case 5:
-        {
+        {printf("state 5: %x\n",current_character);
             if (current_character == 0x0A)
             {
                 return STATE_MACHINE_READY_OK;
@@ -96,15 +95,14 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
             {
                 return STATE_MACHINE_READY_WITH_ERROR;
             }
-            break;
         }
 
         case 7:
         {
+            printf("state 7: %c\n",current_character);
             if (current_character == 'R')
             {
                 state = 8;
-                printf("%c",current_character);
             }
             else
             {
@@ -115,10 +113,10 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
 
         case 8:
         {
+            printf("state 8: %c\n",current_character);
             if (current_character == 'R')
             {
                 state = 9;
-                printf("%c",current_character);
             }
             else
             {
@@ -129,10 +127,10 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
 
         case 9:
         {
+            printf("state 9: %c\n",current_character);
             if (current_character == 'O')
             {
                 state = 10;
-                printf("%c",current_character);
             }
             else
             {
@@ -143,10 +141,10 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
 
         case 10:
         {
+            printf("state 10: %c\n",current_character);
             if (current_character == 'R')
             {
                 state = 11;
-                printf("%c",current_character);
             }
             else
             {
@@ -157,10 +155,10 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
 
         case 11:
         {
+            printf("state 11: %c\n",current_character);
             if (current_character == 0x0D)
             {
                 state = 12;
-                printf("%c",current_character);
             }
             else
             {
@@ -179,15 +177,16 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
             {
                 return STATE_MACHINE_READY_WITH_ERROR;
             }
-            break;
         }
 
         case 14:
         {
+
             if (current_character > 0x20 && current_character < 0x7F)
             {
+                //ADD CHAR
+                addCharInLine(current_character);
                 state = 15;
-                printf("%c",current_character);
             }
             else
             {
@@ -205,6 +204,8 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
             }
             else if (current_character > 0x20 && current_character < 0x7F)
             {
+                //ADD CHAR
+                addCharInLine(current_character);
                 state = 15;
                 printf("%c",current_character);
             }
@@ -239,6 +240,8 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
             }
             else if(current_character == '+')
             {
+                //ENDLINE
+                line++;
                 state = 14;
                 printf("%c",current_character);
             }
@@ -287,28 +290,28 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
     return STATE_MACHINE_NOT_READY;
 }
 
-void  fun(){
-
+void  funBegin(char *filename){
 
     FILE *f;
     unsigned char c;
 
-    if((f=fopen("program","rb"))==NULL){
+    if((f=fopen(filename,"rb"))==NULL){
         printf("eroare deschidere fisier");
     }
     while(fscanf(f,"%c",&c)==1){
 
-        STATE_MACHINE_RETURN_VALUE val = at_command_parse(c);
+        STATE_MACHINE_RETURN_VALUE val = parseNextChar(c);
+
 
         if(val == STATE_MACHINE_READY_OK) {
             printf("Done\n");
+            printf("%s",mydata.data[c]);
             exit(EXIT_SUCCESS);
         }
         else if(val == STATE_MACHINE_READY_WITH_ERROR) {
             printf("Something went wrong :(\n");
             break;
         }
-
 
     }
 }

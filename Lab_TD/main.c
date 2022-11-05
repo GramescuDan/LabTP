@@ -1,5 +1,6 @@
 #include "parser.h"
 
 int main(){
-fun();
+
+    funBegin("program");
 }
