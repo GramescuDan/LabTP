@@ -304,7 +304,7 @@ void  funBegin(char *filename){
 
         if(val == STATE_MACHINE_READY_OK) {
             printf("Done\n");
-            for(int i = 0;i<10;i++){
+            for(int i = 0;i<1000;i++){
                 printf("%d: %s\n",i,mydata.data[i]);
             }
             exit(EXIT_SUCCESS);
