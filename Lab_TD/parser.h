@@ -2,6 +2,8 @@
 #define _PARSER_AT__
 
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #define AT_COMMAND_MAX_LINES 100
 #define AT_COMMAND_MAX_LINE_SIZE 100
@@ -21,5 +23,7 @@ typedef enum
     STATE_MACHINE_READY_WITH_ERROR
 }STATE_MACHINE_RETURN_VALUE;
 STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character);
+
+void fun();
 
 #endif

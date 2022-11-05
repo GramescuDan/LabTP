@@ -1,5 +1,4 @@
 #include "parser.h"
-#include <stdio.h>
 
 AT_COMMAND_DATA mydata;
 STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
@@ -9,16 +8,17 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
     {
         case 0:
         {
-            if (current_character == 0x0D)
+            printf("state 0\n");
+            if (current_character == '\r')
             {
-                state = 1;
                 printf("cr");
+                state = 1;
             }
             break;
         }
         case 1:
         {
-            if (current_character == 0x0A)
+            if (current_character == '\n')
             {
                 state = 2;
                 printf("lf");
@@ -282,36 +282,34 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(uint8_t current_character)
     return STATE_MACHINE_NOT_READY;
 }
 
-int main(){
+void  fun(){
 
     FILE *f;
-    uint8_t c;
+    unsigned char c;
 
-    f=fopen("fisier deschis","r");
-
-    if(f==NULL){
+    if((f=fopen("program","r"))==NULL){
         printf("eroare deschidere fisier");
     }
-    while(fscanf(f,"%c",&c)==1){
+    fscanf(f,"%c",&c);
+    printf("%x",c);
 
-        STATE_MACHINE_RETURN_VALUE val = at_command_parse(c);
-
-        if(val == STATE_MACHINE_NOT_READY) {
-            printf("n-are baterie");
-        }
-
-        if(val == STATE_MACHINE_READY_OK) {
-            printf("s-a citit");
-
-        }
-
-        if(val == STATE_MACHINE_READY_WITH_ERROR) {
-            printf("eroare citire");
-        }
-        break;
-
-    }
-    return 0;
-
-
+//    while(fscanf(f,"%c",&c)==1){
+//
+//        STATE_MACHINE_RETURN_VALUE val = at_command_parse(c);
+//
+//        if(val == STATE_MACHINE_NOT_READY) {
+//            printf("n-are baterie");
+//        }
+//
+//        if(val == STATE_MACHINE_READY_OK) {
+//            printf("s-a citit");
+//
+//        }
+//
+//        if(val == STATE_MACHINE_READY_WITH_ERROR) {
+//            printf("eroare citire");
+//        }
+//        break;
+//
+//    }
 }
