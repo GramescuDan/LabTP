@@ -181,8 +181,8 @@ STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character)
 
         case 14:
         {
-
-            if (current_character > 0x20 && current_character < 0x7F)
+            printf("state 14: %c\n",current_character);
+            if (current_character >= 0x20 && current_character < 0x7F)
             {
                 //ADD CHAR
                 addCharInLine(current_character);
@@ -197,17 +197,16 @@ STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character)
 
         case 15:
         {
+            printf("state 15: %c\n",current_character);
             if (current_character == 0X0D)
             {
                 state = 16;
-                printf("%c",current_character);
             }
-            else if (current_character > 0x20 && current_character < 0x7F)
+            else if (current_character >= 0x20 && current_character < 0x7F)
             {
                 //ADD CHAR
                 addCharInLine(current_character);
                 state = 15;
-                printf("%c",current_character);
             }
 
             else
@@ -305,7 +304,9 @@ void  funBegin(char *filename){
 
         if(val == STATE_MACHINE_READY_OK) {
             printf("Done\n");
-            printf("%s",mydata.data[c]);
+            for(int i = 0;i<10;i++){
+                printf("%d: %s\n",i,mydata.data[i]);
+            }
             exit(EXIT_SUCCESS);
         }
         else if(val == STATE_MACHINE_READY_WITH_ERROR) {
