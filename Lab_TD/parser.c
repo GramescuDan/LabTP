@@ -287,29 +287,26 @@ void  fun(){
     FILE *f;
     unsigned char c;
 
-    if((f=fopen("program","r"))==NULL){
+    if((f=fopen("program","rb"))==NULL){
         printf("eroare deschidere fisier");
     }
-    fscanf(f,"%c",&c);
-    printf("%x",c);
+    while(fscanf(f,"%c",&c)==1){
 
-//    while(fscanf(f,"%c",&c)==1){
-//
-//        STATE_MACHINE_RETURN_VALUE val = at_command_parse(c);
-//
-//        if(val == STATE_MACHINE_NOT_READY) {
-//            printf("n-are baterie");
-//        }
-//
-//        if(val == STATE_MACHINE_READY_OK) {
-//            printf("s-a citit");
-//
-//        }
-//
-//        if(val == STATE_MACHINE_READY_WITH_ERROR) {
-//            printf("eroare citire");
-//        }
-//        break;
-//
-//    }
+        STATE_MACHINE_RETURN_VALUE val = at_command_parse(c);
+
+        if(val == STATE_MACHINE_NOT_READY) {
+            printf("n-are baterie");
+        }
+
+        if(val == STATE_MACHINE_READY_OK) {
+            printf("s-a citit");
+
+        }
+
+        if(val == STATE_MACHINE_READY_WITH_ERROR) {
+            printf("eroare citire");
+        }
+        break;
+
+    }
 }
