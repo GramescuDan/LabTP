@@ -10,12 +10,21 @@ void addCharInLine(const char current_character){
 strncat(mydata.data[line],&aux,1);
 }
 
+void cleanMyData(){
+    for(size_t i = 0; i < 1000; ++i){
+        for(size_t j = 0; j <100; ++j){
+            mydata.data[i][j] = '\0';
+        }
+    }
+
+}
+
 STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character)
 {
     switch (state)
     {
         case 0:
-        {
+        {   cleanMyData();
             printf("state 0: %x \n",current_character);
             if (current_character == '\r')
             {
@@ -182,6 +191,7 @@ STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character)
 
         case 14:
         {
+
             printf("state 14: %c\n",current_character);
             if (current_character >= 0x20 && current_character < 0x7F)
             {
@@ -300,28 +310,24 @@ void  funBegin(char *filename){
     if((f=fopen(filename,"rb"))==NULL){
         printf("eroare deschidere fisier");
     }
-    while(fscanf(f,"%c",&c) ==1){
+    while((flag = fscanf(f,"%c",&c)) !=EOF){
 
-        STATE_MACHINE_RETURN_VALUE val = parseNextChar(c);
-        if(prev==c){
-        flag = 1;
-        }
-        printf("%d",flag);
-        if(val == STATE_MACHINE_READY_OK) {
-                prev = c;
-//            for(int i = 0;i<1000;i++){
-//                printf("%d: %s\n",i,mydata.data[i]);
-//            }
-            if(flag == 1){
-                printf("Done\n");
+            STATE_MACHINE_RETURN_VALUE val = parseNextChar(c);
+            if(val == STATE_MACHINE_READY_OK && flag == 1) {
+
+                for(int i = 0;i<1000;i++){
+                printf("%d: %s\n",i,mydata.data[i]);
+            }
+
+            }
+
+            else if(val == STATE_MACHINE_READY_WITH_ERROR) {
                 break;
             }
-            printf("One down, next to go!");
-        }
-        else if(val == STATE_MACHINE_READY_WITH_ERROR) {
-            printf("Something went wrong :(\n");
-            break;
-        }
+
+            else if(val == STATE_MACHINE_READY_OK && flag != 1){
+                exit(EXIT_SUCCESS);
+            }
 
     }
 }
