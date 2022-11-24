@@ -11,8 +11,10 @@ strncat(mydata.data[line],&aux,1);
 }
 
 void cleanMyData(){
-    for(size_t i = 0; i < 1000; ++i){
-        for(size_t j = 0; j <100; ++j){
+	size_t i = 0;
+	size_t j = 0;
+    for( i=0; i < AT_COMMAND_MAX_LINES; ++i){
+        for( j = 0; j <AT_COMMAND_MAX_LINE_SIZE; ++j){
             mydata.data[i][j] = '\0';
         }
     }
@@ -181,6 +183,7 @@ STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character)
         {
             if (current_character == 0x0A)
             {
+								mydata.lineCount = line;
                 return STATE_MACHINE_READY_OK;
             }
             else

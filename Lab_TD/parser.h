@@ -6,11 +6,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define AT_COMMAND_MAX_LINES 4096
-#define AT_COMMAND_MAX_LINE_SIZE 100
+#define AT_COMMAND_MAX_LINES 100
+#define AT_COMMAND_MAX_LINE_SIZE 128
 typedef struct
 {
     char data[AT_COMMAND_MAX_LINES][AT_COMMAND_MAX_LINE_SIZE + 1];
+		int lineCount;
 
 }AT_COMMAND_DATA;
 
