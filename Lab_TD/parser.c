@@ -21,7 +21,7 @@ void cleanMyData(){
 
 }
 
-STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character)
+STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character, int flag)
 {
     switch (state)
     {
@@ -49,23 +49,29 @@ STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character)
         }
         case 2:
         {printf("state 2: %c\n",current_character);
-            if (current_character == 'O')
-            {
-                state = 3;
-            }
-            else if (current_character == 'E')
-            {
-                state = 7;
-            }
-            else if (current_character == '+')
-            {
-                state = 14;
-            }
+			if(!flag){
+				if (current_character == 'O')
+				{
+					state = 3;
+				}
+				else if (current_character == 'E')
+				{
+					state = 7;
+				}
+				else if (current_character == '+')
+				{
+					state = 14;
+				}
 
-            else
-            {
-                return STATE_MACHINE_READY_WITH_ERROR;
-            }
+				else
+				{
+					return STATE_MACHINE_READY_WITH_ERROR;
+				}	
+			}else{
+				addCharInLine(current_character);
+				state = 20;
+			}
+            
             break;
         }
         case 3:
@@ -298,6 +304,59 @@ STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character)
             }
             break;
         }
+		case 20:{
+            if (current_character == 0X0D)
+            {
+                state = 21;
+            }
+            else if (current_character >= 0x20 && current_character < 0x7F)
+            {
+                //ADD CHAR
+                addCharInLine(current_character);
+                state = 20;
+            }
+
+            else
+            {
+                return STATE_MACHINE_READY_WITH_ERROR;
+            }
+            break;
+		}
+		case 21:{
+			if (current_character == 0x0A)
+            {
+                state = 22;
+            }
+            else
+            {
+                return STATE_MACHINE_READY_WITH_ERROR;
+            }
+            break;
+		}
+		case 22:{
+			if (current_character == 0x0D)
+            {
+                state = 23;
+                printf("%c",current_character);
+            }
+            else
+            {
+                return STATE_MACHINE_READY_WITH_ERROR;
+            }
+            break;
+		}
+		case 23:{
+			if (current_character == 0x0A)
+            {
+                state = 19;
+                printf("%c",current_character);
+            }
+            else
+            {
+                return STATE_MACHINE_READY_WITH_ERROR;
+            }
+            break;
+		}
 
     }
     return STATE_MACHINE_NOT_READY;

@@ -24,5 +24,5 @@ typedef enum
     STATE_MACHINE_READY_WITH_ERROR
 }STATE_MACHINE_RETURN_VALUE;
 
-STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character);
+STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character, int flag);
 #endif
