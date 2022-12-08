@@ -27,7 +27,6 @@ STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character, int fl
     {
         case 0:
         {   cleanMyData();
-            printf("state 0: %x \n",current_character);
             if (current_character == '\r')
             {
                 state = 1;
@@ -36,7 +35,7 @@ STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character, int fl
         }
         case 1:
         {
-            printf("state 0: %x \n",current_character);
+
             if (current_character == '\n')
             {
                 state = 2;
@@ -47,9 +46,8 @@ STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character, int fl
             }
             break;
         }
-        case 2:
-        {printf("state 2: %c\n",current_character);
-			if(!flag){
+        case 2:{
+			if(flag == 0){
 				if (current_character == 'O')
 				{
 					state = 3;
@@ -68,6 +66,7 @@ STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character, int fl
 					return STATE_MACHINE_READY_WITH_ERROR;
 				}	
 			}else{
+				printf("%c",current_character);
 				addCharInLine(current_character);
 				state = 20;
 			}
@@ -75,7 +74,7 @@ STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character, int fl
             break;
         }
         case 3:
-        {   printf("state 3: %c \n",current_character);
+        {
             if (current_character == 'K')
             {
                 state = 4;
@@ -90,7 +89,7 @@ STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character, int fl
 
         case 4:
         {
-            printf("state 4: %x\n",current_character);
+        
             if (current_character == 0x0D)
             {
                 state = 5;
@@ -103,7 +102,7 @@ STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character, int fl
         }
 
         case 5:
-        {printf("state 5: %x\n",current_character);
+        {
             if (current_character == 0x0A)
             {
                 state = 0;
@@ -291,12 +290,10 @@ STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character, int fl
             if (current_character == 'O')
             {
                 state = 3;
-                printf("%c",current_character);
             }
             else if (current_character == 'E')
             {
                 state = 7;
-                printf("%c",current_character);
             }
             else
             {
@@ -312,6 +309,7 @@ STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character, int fl
             else if (current_character >= 0x20 && current_character < 0x7F)
             {
                 //ADD CHAR
+							printf("%c",current_character);
                 addCharInLine(current_character);
                 state = 20;
             }
@@ -325,6 +323,7 @@ STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character, int fl
 		case 21:{
 			if (current_character == 0x0A)
             {
+							printf("\r\n");
                 state = 22;
             }
             else
@@ -337,7 +336,6 @@ STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character, int fl
 			if (current_character == 0x0D)
             {
                 state = 23;
-                printf("%c",current_character);
             }
             else
             {
@@ -349,7 +347,6 @@ STATE_MACHINE_RETURN_VALUE parseNextChar(unsigned char current_character, int fl
 			if (current_character == 0x0A)
             {
                 state = 19;
-                printf("%c",current_character);
             }
             else
             {

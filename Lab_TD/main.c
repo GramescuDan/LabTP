@@ -19,6 +19,13 @@
 AT_COMMAND_DATA data_structure;
 const char* at_command_simple = "AT\r\n";
 const char* at_command_csq = "AT+CSQ\r\n";
+const char* at_command_gmi = "AT+GMI\r\n";
+const char* at_command_gmr = "AT+GMR\r\n";
+const char* at_command_gmm = "AT+GMM\r\n";
+const char* at_command_creg = "AT+CREG\r\n";
+const char* at_command_cops = "AT+COPS\r\n";
+const char* at_command_gsn = "AT+GSN\r\n";
+
 timer_software_handler_t my_timer_handler;
 timer_software_handler_t my_handler;
 
@@ -91,6 +98,7 @@ void MyTimerCallback(timer_software_handler_t handler)
 void GetCommandResponse(const char *command)
 {
  unsigned char ch;
+ int flag = 1;
  BOOLEAN ready = FALSE;
  TIMER_SOFTWARE_reset_timer(my_handler);
  TIMER_SOFTWARE_start_timer(my_handler);
@@ -102,7 +110,7 @@ void GetCommandResponse(const char *command)
 		 STATE_MACHINE_RETURN_VALUE retval;
 		 DRV_UART_ReadByte(UART_3, &ch);
 		
-		 retval = parseNextChar(ch);
+		 retval = parseNextChar(ch,flag);
 		 if (retval == STATE_MACHINE_NOT_READY)
 		 {
 		 
@@ -169,9 +177,12 @@ int ExtractData()
 			i++;
 		}
 		return number;
-		
-	
 }
+char* ExtractDataString(int j)
+{
+		return data_structure.data[j];
+}
+
 
 BOOLEAN CommandResponseValid()
 {
@@ -181,11 +192,10 @@ BOOLEAN CommandResponseValid()
 
 int main(void)
 {
-	uint32_t rssi_value_asu;
+	const char* rssi_value_asu;
 	int rssi_value_dbmw; 
 	
 	timer_software_handler_t handler;
-	uint8_t ch;
 	BoardInit();
 
 	
@@ -230,13 +240,15 @@ int main(void)
 		 if (TIMER_SOFTWARE_interrupt_pending(my_timer_handler))
 		 {
 			 TIMER_SOFTWARE_Wait(500);
-			 ExecuteCommand(at_command_csq);
+			 ExecuteCommand(at_command_gmi);
+			 ExecuteCommand(at_command_gmr);
+			 ExecuteCommand(at_command_gmm);
 			 if (CommandResponseValid()== TRUE)
 			 {
-				
-				 rssi_value_asu = ExtractData();
-				 rssi_value_dbmw = ConvertAsuToDbmw(rssi_value_asu);
-				 printf("GSM Modem signal %d ASU -> %d dBmW\n", rssi_value_asu, rssi_value_dbmw);
+				 rssi_value_asu = ExtractDataString(1);
+				 //rssi_value_dbmw = ConvertAsuToDbmw(rssi_value_asu);
+				 //printf("GSM Modem signal %d ASU -> %d dBmW\n", rssi_value_asu, rssi_value_dbmw);
+				 printf("%s" ,rssi_value_asu);
 			 }
 			 
 			 TIMER_SOFTWARE_clear_interrupt(my_timer_handler);
